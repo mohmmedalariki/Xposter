@@ -120,6 +120,7 @@ def job():
         print("Done processing this tip.")
     else:
         print("Failed to post tweet.")
+        raise RuntimeError("Tweet posting failed (returned False)")
 
 def run_continuously():
     """

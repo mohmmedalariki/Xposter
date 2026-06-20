@@ -13,8 +13,8 @@ def post_tweet_with_browser(text, image_path=None, headless=True):
     
     if not auth_token or auth_token == "your_auth_token_here":
         print("Error: X_COOKIE_AUTH_TOKEN is missing or not set in .env.")
-        print("Please fetch the auth_token cookie from your browser and update .env.")
-        return False
+        print("Please fetch the auth_token cookie from your browser and update .env (or GitHub Secrets).")
+        raise ValueError("X_COOKIE_AUTH_TOKEN is missing")
 
     try:
         with sync_playwright() as p:
@@ -51,7 +51,7 @@ def post_tweet_with_browser(text, image_path=None, headless=True):
             if "login" in current_url or "i/flow/login" in current_url:
                 print("Error: Authentication failed. The auth_token cookie might be invalid or expired.")
                 browser.close()
-                return False
+                raise PermissionError("X Auth token is invalid or expired")
                 
             print("Locating tweet composer...")
             # First, check if the inline composer on home page is visible
@@ -70,7 +70,7 @@ def post_tweet_with_browser(text, image_path=None, headless=True):
                 page.screenshot(path="composer_error.png")
                 print("Saved debug screenshot to composer_error.png")
                 browser.close()
-                return False
+                raise RuntimeError("Could not open tweet composer")
                 
             print("Entering tweet text...")
             composer.click()
@@ -116,6 +116,7 @@ def post_tweet_with_browser(text, image_path=None, headless=True):
                     print("Error: Post button not visible or is disabled.")
                     page.screenshot(path="post_button_error.png")
                     print("Saved debug screenshot to post_button_error.png")
+                    raise RuntimeError("Post button not visible or disabled")
             
             print("Verification complete.")
             browser.close()
@@ -123,7 +124,7 @@ def post_tweet_with_browser(text, image_path=None, headless=True):
                 
     except Exception as e:
         print(f"An unexpected error occurred during Playwright execution: {e}")
-        return False
+        raise e
 
 if __name__ == "__main__":
     import sys
