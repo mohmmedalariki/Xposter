@@ -75,8 +75,11 @@ def generate_image_for_tweet(tweet_content, output_path="tip_image.jpg"):
     
     prompt = f"""
     You are an expert AI image prompt engineer. I will give you a tweet about bug bounty hunting.
-    Your task is to write a highly detailed, cinematic, and visually hooking image generation prompt that perfectly represents the tweet.
-    The image should be visually striking, perhaps cyberpunk, mysterious, or high-tech to appeal to hackers.
+    Your task is to write a highly detailed and visually hooking image generation prompt that perfectly captures the specific technical core of the tweet.
+    
+    CRITICAL INSTRUCTION: To avoid all images looking the same, you MUST pick a distinct and creative artistic style for this prompt. 
+    Examples of styles you can randomly use: 3D Blender Render, Synthwave, minimalist vector art, hyper-realistic macro photography, 90s anime, glitch art, isometric 3D, neon noir, pencil sketch, or pixel art.
+    Do NOT always rely on standard "cyberpunk hacker in a dark room" stereotypes. Make it conceptually abstract, creative, and strictly tailored to the specific concept in the tweet.
     
     Rules:
     1. Output ONLY the image prompt. Do not include any quotes, intro, or outro text.
