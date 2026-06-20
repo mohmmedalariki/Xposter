@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "008_Advanced_XSS_WAF_Bypass_in_JavaScript_Context.md",
+  "last_posted_file": "009_Automating-Cors-Corsy.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -8,6 +8,7 @@
     "005_Advanced-Bug-Bounty-Recon_-Playbook.md",
     "006_Advanced_IDOR_Bypass_Combining_IDs_to_Evade_Authorization.md",
     "007_Advanced_XSS_Bypass_Akamai_WAF.md",
-    "008_Advanced_XSS_WAF_Bypass_in_JavaScript_Context.md"
+    "008_Advanced_XSS_WAF_Bypass_in_JavaScript_Context.md",
+    "009_Automating-Cors-Corsy.md"
   ]
 }
