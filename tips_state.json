@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "010_Bug_Bounty_Dorks.md",
+  "last_posted_file": "011_Bypass-Invalid-ID-Validation-via-Array-Injection.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -10,6 +10,7 @@
     "007_Advanced_XSS_Bypass_Akamai_WAF.md",
     "008_Advanced_XSS_WAF_Bypass_in_JavaScript_Context.md",
     "009_Automating-Cors-Corsy.md",
-    "010_Bug_Bounty_Dorks.md"
+    "010_Bug_Bounty_Dorks.md",
+    "011_Bypass-Invalid-ID-Validation-via-Array-Injection.md"
   ]
 }
