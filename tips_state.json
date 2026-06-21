@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "012_Bypass_403_401_HTTP_Status_Codes.md",
+  "last_posted_file": "013_Bypassing_File_Upload_Restrictions.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -12,6 +12,7 @@
     "009_Automating-Cors-Corsy.md",
     "010_Bug_Bounty_Dorks.md",
     "011_Bypass-Invalid-ID-Validation-via-Array-Injection.md",
-    "012_Bypass_403_401_HTTP_Status_Codes.md"
+    "012_Bypass_403_401_HTTP_Status_Codes.md",
+    "013_Bypassing_File_Upload_Restrictions.md"
   ]
 }
