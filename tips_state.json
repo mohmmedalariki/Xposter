@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "015_Deep_Dive_PII_Hunting_Part2.md",
+  "last_posted_file": "016_File_Upload_XSS_Beyond_SVGs.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -15,6 +15,7 @@
     "012_Bypass_403_401_HTTP_Status_Codes.md",
     "013_Bypassing_File_Upload_Restrictions.md",
     "014_Comprehensive_Web_Application_Security_Testing_Checklist.md",
-    "015_Deep_Dive_PII_Hunting_Part2.md"
+    "015_Deep_Dive_PII_Hunting_Part2.md",
+    "016_File_Upload_XSS_Beyond_SVGs.md"
   ]
 }
