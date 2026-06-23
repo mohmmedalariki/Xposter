@@ -119,12 +119,18 @@ Please output ONLY the final text of the LinkedIn post. Do not include any intro
     }
     
     print("Generating LinkedIn text via Big Pickle...")
-    response = requests.post(url, headers=headers, json=data)
-    if response.status_code == 200:
-        return response.json()["choices"][0]["message"]["content"].strip()
-    else:
-        print(f"Failed to generate text. API responded with {response.status_code}")
-        return None
+    for attempt in range(3):
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 200:
+            return response.json()["choices"][0]["message"]["content"].strip()
+        elif response.status_code == 429:
+            print(f"Rate limited (429). Attempt {attempt+1} of 3. Waiting 60s...")
+            import time
+            time.sleep(60)
+        else:
+            print(f"Failed to generate text. API responded with {response.status_code}")
+            break
+    return None
 
 def process_next_linkedin_post():
     print("\n--- Executing Job: Preparing next LinkedIn Post ---")

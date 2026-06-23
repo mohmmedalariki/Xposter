@@ -61,7 +61,8 @@ def summarize_for_twitter(email_content):
             print(f"Error generating summary with Gemini (Attempt {attempt+1}/3): {e}")
             if attempt < 2:
                 import time
-                time.sleep(5)
+                # Google Gemini 429 often requests ~45s of wait time
+                time.sleep(60)
     return None
 
 def generate_image_for_tweet(tweet_content, output_path="tip_image.jpg"):
@@ -114,7 +115,7 @@ def generate_image_for_tweet(tweet_content, output_path="tip_image.jpg"):
             print(f"Error generating image (Attempt {attempt+1}/3): {e}")
             if attempt < 2:
                 import time
-                time.sleep(5)
+                time.sleep(60)
     return None
 
 if __name__ == "__main__":
