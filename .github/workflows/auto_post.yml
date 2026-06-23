@@ -37,13 +37,16 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           X_COOKIE_AUTH_TOKEN: ${{ secrets.X_COOKIE_AUTH_TOKEN }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          LINKEDIN_COOKIE_LI_AT: ${{ secrets.LINKEDIN_COOKIE_LI_AT }}
         run: |
           python run_once.py
+          python linkedin_generator.py
 
       - name: Commit and push updated state
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add tips_state.json
-          # Only commit if tips_state.json has changed
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update posted tips state" && git push)
+          git add tips_state.json linkedin_state.json
+          # Only commit if tips_state.json or linkedin_state.json has changed
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update posted state (X and LinkedIn)" && git push)

