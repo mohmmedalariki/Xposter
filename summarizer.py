@@ -47,18 +47,22 @@ def summarize_for_twitter(email_content):
     {email_content}
     """
     
-    try:
-        response = model.generate_content(prompt)
-        tweet = response.text.strip()
-        
-        # Strip surrounding quotes if the model added them accidentally
-        if tweet.startswith('"') and tweet.endswith('"'):
-            tweet = tweet[1:-1]
+    for attempt in range(3):
+        try:
+            response = model.generate_content(prompt)
+            tweet = response.text.strip()
             
-        return tweet
-    except Exception as e:
-        print(f"Error generating summary with Gemini: {e}")
-        return None
+            # Strip surrounding quotes if the model added them accidentally
+            if tweet.startswith('"') and tweet.endswith('"'):
+                tweet = tweet[1:-1]
+                
+            return tweet
+        except Exception as e:
+            print(f"Error generating summary with Gemini (Attempt {attempt+1}/3): {e}")
+            if attempt < 2:
+                import time
+                time.sleep(5)
+    return None
 
 def generate_image_for_tweet(tweet_content, output_path="tip_image.jpg"):
     """
@@ -89,25 +93,29 @@ def generate_image_for_tweet(tweet_content, output_path="tip_image.jpg"):
     {tweet_content}
     """
     
-    try:
-        response = model.generate_content(prompt)
-        image_prompt = response.text.strip()
-        print(f"Generated Image Prompt: {image_prompt}")
-        
-        # Call pollinations.ai
-        url = f"https://image.pollinations.ai/prompt/{image_prompt.replace(' ', '%20')}"
-        res = requests.get(url)
-        if res.status_code == 200:
-            with open(output_path, "wb") as f:
-                f.write(res.content)
-            print(f"Successfully generated and saved image to {output_path}")
-            return output_path
-        else:
-            print(f"Error fetching image from pollinations.ai: {res.status_code}")
-            return None
-    except Exception as e:
-        print(f"Error generating image: {e}")
-        return None
+    for attempt in range(3):
+        try:
+            response = model.generate_content(prompt)
+            image_prompt = response.text.strip()
+            print(f"Generated Image Prompt: {image_prompt}")
+            
+            # Call pollinations.ai
+            url = f"https://image.pollinations.ai/prompt/{image_prompt.replace(' ', '%20')}"
+            res = requests.get(url)
+            if res.status_code == 200:
+                with open(output_path, "wb") as f:
+                    f.write(res.content)
+                print(f"Successfully generated and saved image to {output_path}")
+                return output_path
+            else:
+                print(f"Error fetching image from pollinations.ai: {res.status_code}")
+                return None
+        except Exception as e:
+            print(f"Error generating image (Attempt {attempt+1}/3): {e}")
+            if attempt < 2:
+                import time
+                time.sleep(5)
+    return None
 
 if __name__ == "__main__":
     # For testing the summarizer independently
