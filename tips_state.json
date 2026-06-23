@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "021_HTTP_Downgrading_Attack.md",
+  "last_posted_file": "022_HTTP_Parameter_Pollution_HPP_.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -21,6 +21,7 @@
     "018_Google_Dorks_for_Recon_Sensitive_Info_Disclosure.md",
     "019_HTML_Sanitizer_Bypass.md",
     "020_HTTP-Header-Injection.md",
-    "021_HTTP_Downgrading_Attack.md"
+    "021_HTTP_Downgrading_Attack.md",
+    "022_HTTP_Parameter_Pollution_HPP_.md"
   ]
 }
