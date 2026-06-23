@@ -107,7 +107,7 @@ Please output ONLY the final text of the LinkedIn post. Do not include any intro
     }
     data = {
         "model": "big-pickle",
-        "max_tokens": 1500,
+        "max_tokens": 4000,
         "temperature": 0.7,
         "messages": [
             {
@@ -120,17 +120,28 @@ Please output ONLY the final text of the LinkedIn post. Do not include any intro
     
     print("Generating LinkedIn text via Big Pickle...")
     for attempt in range(3):
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code == 200:
-            return response.json()["choices"][0]["message"]["content"].strip()
-        elif response.status_code == 429:
-            print(f"Rate limited (429). Attempt {attempt+1} of 3. Waiting 60s...")
+        try:
+            response = requests.post(url, headers=headers, json=data, timeout=60)
+            if response.status_code == 200:
+                content = response.json()["choices"][0]["message"]["content"].strip()
+                if not content:
+                    print(f"API returned 200 OK but empty content! Attempt {attempt+1}/3. Retrying in 10s...", flush=True)
+                    import time
+                    time.sleep(10)
+                    continue
+                return content
+            elif response.status_code == 429:
+                print(f"Rate limited (429). Attempt {attempt+1} of 3. Waiting 60s...", flush=True)
+                import time
+                time.sleep(60)
+            else:
+                raise RuntimeError(f"OpenCode API failed with {response.status_code}: {response.text}")
+        except requests.exceptions.RequestException as e:
+            print(f"Network error on attempt {attempt+1}: {e}", flush=True)
             import time
-            time.sleep(60)
-        else:
-            print(f"Failed to generate text. API responded with {response.status_code}")
-            break
-    return None
+            time.sleep(10)
+            
+    raise RuntimeError("OpenCode API exhausted all retries or hit a hard rate limit.")
 
 def process_next_linkedin_post():
     print("\n--- Executing Job: Preparing next LinkedIn Post ---")
