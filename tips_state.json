@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "020_HTTP-Header-Injection.md",
+  "last_posted_file": "021_HTTP_Downgrading_Attack.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -20,6 +20,7 @@
     "017_Google_Dorks_for_Bug_Bounty_Web_Security.md",
     "018_Google_Dorks_for_Recon_Sensitive_Info_Disclosure.md",
     "019_HTML_Sanitizer_Bypass.md",
-    "020_HTTP-Header-Injection.md"
+    "020_HTTP-Header-Injection.md",
+    "021_HTTP_Downgrading_Attack.md"
   ]
 }
