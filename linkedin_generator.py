@@ -140,7 +140,7 @@ def process_next_linkedin_post():
     # 1. Generate text
     post_text = generate_linkedin_text(playbook_data)
     if not post_text:
-        return
+        raise RuntimeError("LinkedIn text generation failed (likely 429 Rate Limit from OpenCode API).")
         
     print(f"Generated LinkedIn Post:\n---\n{post_text}\n---")
     
