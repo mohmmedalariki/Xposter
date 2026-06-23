@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "017_Google_Dorks_for_Bug_Bounty_Web_Security.md",
+  "last_posted_file": "018_Google_Dorks_for_Recon_Sensitive_Info_Disclosure.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -17,6 +17,7 @@
     "014_Comprehensive_Web_Application_Security_Testing_Checklist.md",
     "015_Deep_Dive_PII_Hunting_Part2.md",
     "016_File_Upload_XSS_Beyond_SVGs.md",
-    "017_Google_Dorks_for_Bug_Bounty_Web_Security.md"
+    "017_Google_Dorks_for_Bug_Bounty_Web_Security.md",
+    "018_Google_Dorks_for_Recon_Sensitive_Info_Disclosure.md"
   ]
 }
