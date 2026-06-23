@@ -2,8 +2,8 @@ name: Automated X Poster
 
 on:
   schedule:
-    # Runs at 00:00, 06:00, and 12:00 UTC (which is 08:00, 14:00, and 20:00 local time UTC+8)
-    - cron: '0 0,6,12 * * *'
+    # Runs at 23:40, 05:40, and 11:40 UTC (to compensate for GitHub Actions delays, ensuring it posts closer to 08:00, 14:00, and 20:00 local time UTC+8)
+    - cron: '40 5,11,23 * * *'
   workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
 
 jobs:
