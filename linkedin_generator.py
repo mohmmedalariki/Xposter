@@ -107,8 +107,13 @@ Please output ONLY the final text of the LinkedIn post. Do not include any intro
     }
     data = {
         "model": "big-pickle",
+        "max_tokens": 1500,
+        "temperature": 0.7,
         "messages": [
-            {"role": "system", "content": "You are a professional LinkedIn ghostwriter for cybersecurity experts."},
+            {
+                "role": "system", 
+                "content": "You are an elite, professional LinkedIn ghostwriter for cybersecurity experts. You write detailed, high-value, and comprehensive posts with bullet points, actionable advice, and deep insights. Never output short or cut-off responses."
+            },
             {"role": "user", "content": prompt}
         ]
     }
