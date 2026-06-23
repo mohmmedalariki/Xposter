@@ -1,7 +1,8 @@
 import os
 import json
 import requests
-from summarizer import generate_image_for_tweet
+from opencode_client import generate_linkedin_post, generate_image
+from linkedin_api import post_linkedin_via_api
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -142,10 +143,9 @@ def process_next_linkedin_post():
     print("Generating engaging image for LinkedIn...")
     image_path = generate_image_for_tweet(post_text, output_path="current_linkedin_image.jpg")
     
-    # 3. Publish to LinkedIn via Playwright Browser (headless)
-    from linkedin_playwright import post_linkedin_with_browser
+    # 3. Publish to LinkedIn via API
     print("Publishing to LinkedIn...")
-    success = post_linkedin_with_browser(post_text, image_path=image_path, headless=True)
+    success = post_linkedin_via_api(post_text, image_path=image_path)
     
     if success:
         advance_linkedin_state(state)
