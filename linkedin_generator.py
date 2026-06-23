@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-from opencode_client import generate_linkedin_post, generate_image
+from summarizer import generate_image_for_tweet
 from linkedin_api import post_linkedin_via_api
 from dotenv import load_dotenv
 
