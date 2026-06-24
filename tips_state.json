@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "024_Host_Header_Injection_Cache_Poisoning_Attack_Vector.md",
+  "last_posted_file": "025_How_It_Happens_and_How_to_Find_It.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -24,6 +24,7 @@
     "021_HTTP_Downgrading_Attack.md",
     "022_HTTP_Parameter_Pollution_HPP_.md",
     "023_Hacking_Tips_for_MikroTik_Network_Exploitation.md",
-    "024_Host_Header_Injection_Cache_Poisoning_Attack_Vector.md"
+    "024_Host_Header_Injection_Cache_Poisoning_Attack_Vector.md",
+    "025_How_It_Happens_and_How_to_Find_It.md"
   ]
 }
