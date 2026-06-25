@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "027_Master_SQL_Injection_SQLi_Attacks.md",
+  "last_posted_file": "028_Masterclass_XSS_Exploits.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -27,6 +27,7 @@
     "024_Host_Header_Injection_Cache_Poisoning_Attack_Vector.md",
     "025_How_It_Happens_and_How_to_Find_It.md",
     "026_LFI_Bypass_Techniques.md",
-    "027_Master_SQL_Injection_SQLi_Attacks.md"
+    "027_Master_SQL_Injection_SQLi_Attacks.md",
+    "028_Masterclass_XSS_Exploits.md"
   ]
 }
