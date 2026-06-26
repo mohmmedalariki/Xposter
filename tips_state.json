@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "028_Masterclass_XSS_Exploits.md",
+  "last_posted_file": "029_Mastering-PHP-Filters.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -28,6 +28,7 @@
     "025_How_It_Happens_and_How_to_Find_It.md",
     "026_LFI_Bypass_Techniques.md",
     "027_Master_SQL_Injection_SQLi_Attacks.md",
-    "028_Masterclass_XSS_Exploits.md"
+    "028_Masterclass_XSS_Exploits.md",
+    "029_Mastering-PHP-Filters.md"
   ]
 }
