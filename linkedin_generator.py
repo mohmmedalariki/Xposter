@@ -88,15 +88,21 @@ Your task is to write a highly engaging, high-quality LinkedIn post summarizing 
 Strict Rules & Tone Guidelines:
 {skill_content}
 
+CRITICAL FORMATTING RULES FOR LINKEDIN:
+1. NO MARKDOWN: LinkedIn does NOT render markdown. Do NOT use asterisks (**) for bold, underscores (_) for italics, or hashes (#) for headers.
+2. EMPHASIS: If you must emphasize a word, use UPPERCASE instead of bold/italics.
+3. LISTS: Use simple unicode bullet points (•, -, or 1.) instead of markdown asterisks. 
+4. COMPLETENESS: The post MUST have a definitive, natural ending. Do NOT cut off mid-sentence. Do NOT leave placeholders.
+
 At the very end of your post, you MUST include this exact link to the original writeup:
 {writeup_url}
 
-Also, make sure to include 3-5 highly relevant hashtags (#s) after the URL.
+Also, make sure to include 3-5 highly relevant hashtags (#s) AFTER the URL.
 
 The Playbook Data:
 {playbook_json}
 
-Please output ONLY the final text of the LinkedIn post. Do not include any introductory remarks.
+Please output ONLY the final text of the LinkedIn post in pure plain text format. Do not include any introductory remarks.
 """
 
     url = "https://opencode.ai/zen/v1/chat/completions"
@@ -112,7 +118,7 @@ Please output ONLY the final text of the LinkedIn post. Do not include any intro
         "messages": [
             {
                 "role": "system", 
-                "content": "You are an elite, professional LinkedIn ghostwriter for cybersecurity experts. You write detailed, high-value, and comprehensive posts with bullet points, actionable advice, and deep insights. Never output short or cut-off responses."
+                "content": "You are an elite, professional LinkedIn ghostwriter for cybersecurity experts. You write detailed, high-value, and comprehensive posts. You NEVER use markdown formatting (no **, no _, no # for headers). You output clean, beautifully spaced plain text that is ready to copy-paste into LinkedIn."
             },
             {"role": "user", "content": prompt}
         ]
