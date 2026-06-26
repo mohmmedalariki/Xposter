@@ -40,7 +40,6 @@ jobs:
           X_COOKIE_AUTH_TOKEN: ${{ secrets.X_COOKIE_AUTH_TOKEN }}
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
-          HORDE_API_KEY: ${{ secrets.HORDE_API_KEY }}
         run: |
           python run_once.py
           python linkedin_generator.py
