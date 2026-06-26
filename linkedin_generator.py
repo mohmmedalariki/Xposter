@@ -166,11 +166,11 @@ def generate_image_for_linkedin(post_content, output_path="current_linkedin_imag
     
     prompt = f"""
     You are an expert AI image prompt engineer. I will give you a LinkedIn post about cybersecurity.
-    Your task is to write a highly detailed and visually hooking image generation prompt that perfectly captures the specific technical core of the post.
+    Your task is to write a highly detailed and visually hooking image generation prompt that captures the core technical concept in an EDUCATIONAL / TEACHING style.
     
-    CRITICAL INSTRUCTION: To avoid all images looking the same, you MUST pick a distinct and creative artistic style for this prompt. 
-    Examples of styles you can randomly use: 3D Blender Render, Synthwave, minimalist vector art, hyper-realistic macro photography, 90s anime, glitch art, isometric 3D, neon noir, pencil sketch, or pixel art.
-    Do NOT always rely on standard "cyberpunk hacker in a dark room" stereotypes. Make it conceptually abstract, creative, and strictly tailored to the specific concept in the post.
+    CRITICAL INSTRUCTION: The generated image should look like a high-end educational resource. 
+    Examples of styles you can randomly use: 3D isometric diagram, hyper-realistic classroom whiteboard sketch, sleek vector infographic, blueprint schematic, digital textbook illustration, or clean UI breakdown.
+    Avoid standard "cyberpunk hacker" stereotypes. Instead, visually EXPLAIN the vulnerability or concept being taught in the post.
     
     Rules:
     1. Output ONLY the image prompt. Do not include any quotes, intro, or outro text.
