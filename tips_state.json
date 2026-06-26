@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "030_Next.js_WAF_Bypass.md",
+  "last_posted_file": "031_PII_Part3_Impact_and_Reporting.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -30,6 +30,7 @@
     "027_Master_SQL_Injection_SQLi_Attacks.md",
     "028_Masterclass_XSS_Exploits.md",
     "029_Mastering-PHP-Filters.md",
-    "030_Next.js_WAF_Bypass.md"
+    "030_Next.js_WAF_Bypass.md",
+    "031_PII_Part3_Impact_and_Reporting.md"
   ]
 }
