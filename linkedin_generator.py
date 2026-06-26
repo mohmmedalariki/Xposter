@@ -143,6 +143,60 @@ Please output ONLY the final text of the LinkedIn post. Do not include any intro
             
     raise RuntimeError("OpenCode API exhausted all retries or hit a hard rate limit.")
 
+def generate_image_for_linkedin(post_content, output_path="current_linkedin_image.jpg"):
+    """
+    Uses a dedicated Gemini API key to generate a visual prompt,
+    then fetches the generated image from pollinations.ai.
+    """
+    import google.generativeai as genai
+    api_key = os.getenv("GEMINI_API_KEY_LINKEDIN")
+    if not api_key:
+        print("Error: GEMINI_API_KEY_LINKEDIN not set. Using fallback image generation.")
+        from summarizer import generate_image_for_tweet
+        return generate_image_for_tweet(post_content, output_path)
+        
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    
+    prompt = f"""
+    You are an expert AI image prompt engineer. I will give you a LinkedIn post about cybersecurity.
+    Your task is to write a highly detailed and visually hooking image generation prompt that perfectly captures the specific technical core of the post.
+    
+    CRITICAL INSTRUCTION: To avoid all images looking the same, you MUST pick a distinct and creative artistic style for this prompt. 
+    Examples of styles you can randomly use: 3D Blender Render, Synthwave, minimalist vector art, hyper-realistic macro photography, 90s anime, glitch art, isometric 3D, neon noir, pencil sketch, or pixel art.
+    Do NOT always rely on standard "cyberpunk hacker in a dark room" stereotypes. Make it conceptually abstract, creative, and strictly tailored to the specific concept in the post.
+    
+    Rules:
+    1. Output ONLY the image prompt. Do not include any quotes, intro, or outro text.
+    2. Keep it under 50 words.
+    
+    Post:
+    {post_content}
+    """
+    
+    for attempt in range(3):
+        try:
+            response = model.generate_content(prompt)
+            image_prompt = response.text.strip()
+            print(f"Generated Image Prompt for LinkedIn: {image_prompt}")
+            
+            url = f"https://image.pollinations.ai/prompt/{image_prompt.replace(' ', '%20')}"
+            res = requests.get(url)
+            if res.status_code == 200:
+                with open(output_path, "wb") as f:
+                    f.write(res.content)
+                print(f"Successfully generated and saved LinkedIn image to {output_path}")
+                return output_path
+            else:
+                print(f"Error fetching image from pollinations.ai: {res.status_code}")
+                return None
+        except Exception as e:
+            print(f"Error generating LinkedIn image (Attempt {attempt+1}/3): {e}")
+            if attempt < 2:
+                import time
+                time.sleep(60)
+    return None
+
 def process_next_linkedin_post():
     print("\n--- Executing Job: Preparing next LinkedIn Post ---")
     result = get_next_playbook()
@@ -161,9 +215,9 @@ def process_next_linkedin_post():
         
     print(f"Generated LinkedIn Post:\n---\n{post_text}\n---")
     
-    # 2. Generate image using Gemini
+    # 2. Generate image using dedicated Gemini key
     print("Generating engaging image for LinkedIn...")
-    image_path = generate_image_for_tweet(post_text, output_path="current_linkedin_image.jpg")
+    image_path = generate_image_for_linkedin(post_text, output_path="current_linkedin_image.jpg")
     
     # 3. Publish to LinkedIn via API
     print("Publishing to LinkedIn...")
