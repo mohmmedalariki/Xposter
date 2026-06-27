@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "036_Stored-XSS-via-Go-SSTI.md",
+  "last_posted_file": "037_The_Internet_s_Secret_Backdoor.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -36,6 +36,7 @@
     "033_Remote_Code_Execution_RCE_Payloads_Bypasses_Real-World_Tips.md",
     "034_Reproduce_PII_Data_Leaks_Like_a_Pro.md",
     "035_Server-Side_Template_Injection_SSTI_Explained_with_Payloads.md",
-    "036_Stored-XSS-via-Go-SSTI.md"
+    "036_Stored-XSS-via-Go-SSTI.md",
+    "037_The_Internet_s_Secret_Backdoor.md"
   ]
 }
