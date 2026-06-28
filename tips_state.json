@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "038_The_Silent_Killer_in_Cybersecurity.md",
+  "last_posted_file": "039_Understanding_PII_Initial_Discovery_Part1.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -38,6 +38,7 @@
     "035_Server-Side_Template_Injection_SSTI_Explained_with_Payloads.md",
     "036_Stored-XSS-via-Go-SSTI.md",
     "037_The_Internet_s_Secret_Backdoor.md",
-    "038_The_Silent_Killer_in_Cybersecurity.md"
+    "038_The_Silent_Killer_in_Cybersecurity.md",
+    "039_Understanding_PII_Initial_Discovery_Part1.md"
   ]
 }
