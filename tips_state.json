@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "040_Understanding_phpinfo_part1.md",
+  "last_posted_file": "041_Understanding_phpinfo_part2.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -40,6 +40,7 @@
     "037_The_Internet_s_Secret_Backdoor.md",
     "038_The_Silent_Killer_in_Cybersecurity.md",
     "039_Understanding_PII_Initial_Discovery_Part1.md",
-    "040_Understanding_phpinfo_part1.md"
+    "040_Understanding_phpinfo_part1.md",
+    "041_Understanding_phpinfo_part2.md"
   ]
 }
