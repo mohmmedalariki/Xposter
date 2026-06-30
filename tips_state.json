@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "044_Waf-Bypass-Akamai-Cloudflare.md",
+  "last_posted_file": "045_WhatWeb-Tool-Spotlight.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -44,6 +44,7 @@
     "041_Understanding_phpinfo_part2.md",
     "042_Understanding_phpinfo_part3.md",
     "043_Unicode-Based_XSS_Payloads.md",
-    "044_Waf-Bypass-Akamai-Cloudflare.md"
+    "044_Waf-Bypass-Akamai-Cloudflare.md",
+    "045_WhatWeb-Tool-Spotlight.md"
   ]
 }
