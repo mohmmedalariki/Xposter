@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "045_WhatWeb-Tool-Spotlight.md",
+  "last_posted_file": "046_XSS-to-Account-Takeover-via-Cookie-Theft.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -45,6 +45,7 @@
     "042_Understanding_phpinfo_part3.md",
     "043_Unicode-Based_XSS_Payloads.md",
     "044_Waf-Bypass-Akamai-Cloudflare.md",
-    "045_WhatWeb-Tool-Spotlight.md"
+    "045_WhatWeb-Tool-Spotlight.md",
+    "046_XSS-to-Account-Takeover-via-Cookie-Theft.md"
   ]
 }
