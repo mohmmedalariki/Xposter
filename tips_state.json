@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "047_XSS_Tip_Escaping_Out_of_textarea_Tag.md",
+  "last_posted_file": "048_XSS_WAF_Bypass_3_Tricks.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -47,6 +47,7 @@
     "044_Waf-Bypass-Akamai-Cloudflare.md",
     "045_WhatWeb-Tool-Spotlight.md",
     "046_XSS-to-Account-Takeover-via-Cookie-Theft.md",
-    "047_XSS_Tip_Escaping_Out_of_textarea_Tag.md"
+    "047_XSS_Tip_Escaping_Out_of_textarea_Tag.md",
+    "048_XSS_WAF_Bypass_3_Tricks.md"
   ]
 }
