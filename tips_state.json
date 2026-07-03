@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "050_advanced_rce_part2.md",
+  "last_posted_file": "051_api-testing-methodology.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -50,6 +50,7 @@
     "047_XSS_Tip_Escaping_Out_of_textarea_Tag.md",
     "048_XSS_WAF_Bypass_3_Tricks.md",
     "049_advanced_rce_part1.md",
-    "050_advanced_rce_part2.md"
+    "050_advanced_rce_part2.md",
+    "051_api-testing-methodology.md"
   ]
 }
