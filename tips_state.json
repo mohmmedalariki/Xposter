@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "052_automation-recon.md",
+  "last_posted_file": "053_blind-rce-file-exfiltration.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -52,6 +52,7 @@
     "049_advanced_rce_part1.md",
     "050_advanced_rce_part2.md",
     "051_api-testing-methodology.md",
-    "052_automation-recon.md"
+    "052_automation-recon.md",
+    "053_blind-rce-file-exfiltration.md"
   ]
 }
