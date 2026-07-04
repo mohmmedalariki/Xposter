@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "054_bug_hunt_admin_panel_recon.md",
+  "last_posted_file": "055_captcha-bypass-techniques.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -54,6 +54,7 @@
     "051_api-testing-methodology.md",
     "052_automation-recon.md",
     "053_blind-rce-file-exfiltration.md",
-    "054_bug_hunt_admin_panel_recon.md"
+    "054_bug_hunt_admin_panel_recon.md",
+    "055_captcha-bypass-techniques.md"
   ]
 }
