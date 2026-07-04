@@ -165,7 +165,7 @@ def generate_image_for_linkedin(post_content, output_path="current_linkedin_imag
     model = genai.GenerativeModel('gemini-2.5-flash')
     
     prompt = f"""
-    You are an expert AI image prompt engineer. I will give you a core cybersecurity lesson.
+    You are an expert AI image prompt engineer. I will give you a core cybersecurity vulnerability type.
     Your task is to write a highly detailed and visually hooking image generation prompt that captures the core technical concept in an EDUCATIONAL / TEACHING style.
     
     CRITICAL INSTRUCTION: The generated image should look like a high-end educational resource. 
@@ -175,8 +175,9 @@ def generate_image_for_linkedin(post_content, output_path="current_linkedin_imag
     Rules:
     1. Output ONLY the image prompt. Do not include any quotes, intro, or outro text.
     2. Keep it under 50 words.
+    3. IMPORTANT: The image MUST NOT contain any text, words, or letters. Add 'no text, no letters, no words' to your generated prompt.
     
-    Key Lesson:
+    Vulnerability Type:
     {post_content}
     """
     
@@ -223,12 +224,12 @@ def process_next_linkedin_post():
     
     # 2. Generate image using dedicated Gemini key
     print("Generating engaging image for LinkedIn...")
-    # Feed Gemini the 'key_lesson' instead of the full post so the image matches the core technical takeaway
-    key_lesson = playbook_data.get("key_lesson")
-    if not key_lesson:
-        key_lesson = playbook_data.get("meta", {}).get("title", post_text[:500])
+    # Feed Gemini the 'vuln_type' instead of the full post so the image matches the core technical takeaway
+    vuln_type = playbook_data.get("meta", {}).get("vuln_type")
+    if not vuln_type:
+        vuln_type = playbook_data.get("meta", {}).get("title", post_text[:500])
         
-    image_path = generate_image_for_linkedin(key_lesson, output_path="current_linkedin_image.jpg")
+    image_path = generate_image_for_linkedin(vuln_type, output_path="current_linkedin_image.jpg")
     
     # 3. Publish to LinkedIn via API
     print("Publishing to LinkedIn...")

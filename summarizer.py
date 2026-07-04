@@ -90,6 +90,7 @@ def generate_image_for_tweet(tweet_content, output_path="tip_image.jpg"):
     Rules:
     1. Output ONLY the image prompt. Do not include any quotes, intro, or outro text.
     2. Keep it under 50 words.
+    3. IMPORTANT: The image MUST NOT contain any text, words, or letters. Add 'no text, no letters, no words' to your generated prompt.
     
     Tweet:
     {tweet_content}
