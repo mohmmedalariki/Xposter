@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "058_feroxbuster-guide.md",
+  "last_posted_file": "059_file-upload-bypass-techniques.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -58,6 +58,7 @@
     "055_captcha-bypass-techniques.md",
     "056_cdn-cgi-trace-recon-method.md",
     "057_email-injection-based-account-takeover-technique.md",
-    "058_feroxbuster-guide.md"
+    "058_feroxbuster-guide.md",
+    "059_file-upload-bypass-techniques.md"
   ]
 }
