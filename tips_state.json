@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "060_file_upload_basics-2.md",
+  "last_posted_file": "061_file_upload_basics-3.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -60,6 +60,7 @@
     "057_email-injection-based-account-takeover-technique.md",
     "058_feroxbuster-guide.md",
     "059_file-upload-bypass-techniques.md",
-    "060_file_upload_basics-2.md"
+    "060_file_upload_basics-2.md",
+    "061_file_upload_basics-3.md"
   ]
 }
