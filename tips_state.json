@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "062_file_upload_basics-4.md",
+  "last_posted_file": "063_file_upload_basics.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -62,6 +62,7 @@
     "059_file-upload-bypass-techniques.md",
     "060_file_upload_basics-2.md",
     "061_file_upload_basics-3.md",
-    "062_file_upload_basics-4.md"
+    "062_file_upload_basics-4.md",
+    "063_file_upload_basics.md"
   ]
 }
