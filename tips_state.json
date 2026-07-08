@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "066_http_errors_and_bypass_methods.md",
+  "last_posted_file": "067_idor-guide.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -66,6 +66,7 @@
     "063_file_upload_basics.md",
     "064_get_parameters_recon.md",
     "065_google-dorking-test-environments.md",
-    "066_http_errors_and_bypass_methods.md"
+    "066_http_errors_and_bypass_methods.md",
+    "067_idor-guide.md"
   ]
 }
