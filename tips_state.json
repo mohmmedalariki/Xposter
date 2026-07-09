@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "068_idor-part2-advanced.md",
+  "last_posted_file": "069_idor_json_bypass.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -68,6 +68,7 @@
     "065_google-dorking-test-environments.md",
     "066_http_errors_and_bypass_methods.md",
     "067_idor-guide.md",
-    "068_idor-part2-advanced.md"
+    "068_idor-part2-advanced.md",
+    "069_idor_json_bypass.md"
   ]
 }
