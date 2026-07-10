@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "071_idor_part_3_Automation_And_Bounty_Mastery.md",
+  "last_posted_file": "072_nextjs-middleware-ssrf.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -71,6 +71,7 @@
     "068_idor-part2-advanced.md",
     "069_idor_json_bypass.md",
     "070_idor_part4-IoT_API.md",
-    "071_idor_part_3_Automation_And_Bounty_Mastery.md"
+    "071_idor_part_3_Automation_And_Bounty_Mastery.md",
+    "072_nextjs-middleware-ssrf.md"
   ]
 }
