@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "074_ssrf_ipfuscation.md",
+  "last_posted_file": "075_tor-ip-changer-guide.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -74,6 +74,7 @@
     "071_idor_part_3_Automation_And_Bounty_Mastery.md",
     "072_nextjs-middleware-ssrf.md",
     "073_rate-limit-bypass.md",
-    "074_ssrf_ipfuscation.md"
+    "074_ssrf_ipfuscation.md",
+    "075_tor-ip-changer-guide.md"
   ]
 }
