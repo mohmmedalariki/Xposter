@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "076_triple-fuzzing.md",
+  "last_posted_file": "077_unsafe-file-upload.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -76,6 +76,7 @@
     "073_rate-limit-bypass.md",
     "074_ssrf_ipfuscation.md",
     "075_tor-ip-changer-guide.md",
-    "076_triple-fuzzing.md"
+    "076_triple-fuzzing.md",
+    "077_unsafe-file-upload.md"
   ]
 }
