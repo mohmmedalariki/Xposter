@@ -1,5 +1,5 @@
 {
-  "last_posted_file": "075_tor-ip-changer-guide.md",
+  "last_posted_file": "076_triple-fuzzing.md",
   "posted_files": [
     "001_50-parameters-devs-use.md",
     "002_500-error-hunting.md",
@@ -75,6 +75,7 @@
     "072_nextjs-middleware-ssrf.md",
     "073_rate-limit-bypass.md",
     "074_ssrf_ipfuscation.md",
-    "075_tor-ip-changer-guide.md"
+    "075_tor-ip-changer-guide.md",
+    "076_triple-fuzzing.md"
   ]
 }
