@@ -1,129 +1,129 @@
-import os
-import requests
-import json
-from dotenv import load_dotenv
+# import os
+# import requests
+# import json
+# from dotenv import load_dotenv
 
-def get_person_urn(access_token):
-    """Fetch the user's LinkedIn URN using the OpenID userinfo endpoint."""
-    url = "https://api.linkedin.com/v2/userinfo"
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
-    response = requests.get(url, headers=headers)
+# def get_person_urn(access_token):
+#     """Fetch the user's LinkedIn URN using the OpenID userinfo endpoint."""
+#     url = "https://api.linkedin.com/v2/userinfo"
+#     headers = {
+#         "Authorization": f"Bearer {access_token}"
+#     }
+#     response = requests.get(url, headers=headers)
     
-    if response.status_code != 200:
-        raise ValueError(f"Failed to fetch user profile: {response.text}")
+#     if response.status_code != 200:
+#         raise ValueError(f"Failed to fetch user profile: {response.text}")
         
-    data = response.json()
-    sub = data.get("sub")
-    if not sub:
-        raise ValueError("Could not find 'sub' (person ID) in the userinfo response.")
+#     data = response.json()
+#     sub = data.get("sub")
+#     if not sub:
+#         raise ValueError("Could not find 'sub' (person ID) in the userinfo response.")
         
-    return f"urn:li:person:{sub}"
+#     return f"urn:li:person:{sub}"
 
-def upload_image(access_token, person_urn, image_path):
-    """Uploads an image to LinkedIn and returns the image URN."""
-    # 1. Initialize Upload
-    init_url = "https://api.linkedin.com/rest/images?action=initializeUpload"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "X-Restli-Protocol-Version": "2.0.0",
-        "LinkedIn-Version": "202605",
-        "Content-Type": "application/json"
-    }
+# def upload_image(access_token, person_urn, image_path):
+#     """Uploads an image to LinkedIn and returns the image URN."""
+#     # 1. Initialize Upload
+#     init_url = "https://api.linkedin.com/rest/images?action=initializeUpload"
+#     headers = {
+#         "Authorization": f"Bearer {access_token}",
+#         "X-Restli-Protocol-Version": "2.0.0",
+#         "LinkedIn-Version": "202605",
+#         "Content-Type": "application/json"
+#     }
     
-    init_payload = {
-        "initializeUploadRequest": {
-            "owner": person_urn
-        }
-    }
+#     init_payload = {
+#         "initializeUploadRequest": {
+#             "owner": person_urn
+#         }
+#     }
     
-    response = requests.post(init_url, headers=headers, json=init_payload)
-    if response.status_code not in (200, 201):
-        raise ValueError(f"Failed to initialize image upload: {response.text}")
+#     response = requests.post(init_url, headers=headers, json=init_payload)
+#     if response.status_code not in (200, 201):
+#         raise ValueError(f"Failed to initialize image upload: {response.text}")
         
-    init_data = response.json()
-    upload_url = init_data["value"]["uploadUrl"]
-    image_urn = init_data["value"]["image"]
+#     init_data = response.json()
+#     upload_url = init_data["value"]["uploadUrl"]
+#     image_urn = init_data["value"]["image"]
     
-    # 2. Upload the image bytes
-    with open(image_path, "rb") as f:
-        image_data = f.read()
+#     # 2. Upload the image bytes
+#     with open(image_path, "rb") as f:
+#         image_data = f.read()
         
-    upload_headers = {
-        "Authorization": f"Bearer {access_token}",
-    }
+#     upload_headers = {
+#         "Authorization": f"Bearer {access_token}",
+#     }
     
-    upload_response = requests.put(upload_url, headers=upload_headers, data=image_data)
-    if upload_response.status_code not in (200, 201):
-        raise ValueError(f"Failed to upload image data: {upload_response.text}")
+#     upload_response = requests.put(upload_url, headers=upload_headers, data=image_data)
+#     if upload_response.status_code not in (200, 201):
+#         raise ValueError(f"Failed to upload image data: {upload_response.text}")
         
-    return image_urn
+#     return image_urn
 
-def post_linkedin_via_api(text_content, image_path=None):
-    """
-    Publish a post to LinkedIn using the official REST API.
-    """
-    load_dotenv()
-    access_token = os.getenv("LINKEDIN_ACCESS_TOKEN")
+# def post_linkedin_via_api(text_content, image_path=None):
+#     """
+#     Publish a post to LinkedIn using the official REST API.
+#     """
+#     load_dotenv()
+#     access_token = os.getenv("LINKEDIN_ACCESS_TOKEN")
     
-    if not access_token:
-        raise ValueError("LINKEDIN_ACCESS_TOKEN is not set in .env or environment variables.")
+#     if not access_token:
+#         raise ValueError("LINKEDIN_ACCESS_TOKEN is not set in .env or environment variables.")
         
-    print("Authenticating with LinkedIn API...")
-    person_urn = get_person_urn(access_token)
-    print(f"Authenticated as: {person_urn}")
+#     print("Authenticating with LinkedIn API...")
+#     person_urn = get_person_urn(access_token)
+#     print(f"Authenticated as: {person_urn}")
     
-    image_urn = None
-    if image_path and os.path.exists(image_path):
-        print(f"Uploading image {image_path} to LinkedIn...")
-        image_urn = upload_image(access_token, person_urn, image_path)
-        print(f"Image uploaded successfully! URN: {image_urn}")
+#     image_urn = None
+#     if image_path and os.path.exists(image_path):
+#         print(f"Uploading image {image_path} to LinkedIn...")
+#         image_urn = upload_image(access_token, person_urn, image_path)
+#         print(f"Image uploaded successfully! URN: {image_urn}")
         
-    print("Publishing post...")
-    post_url = "https://api.linkedin.com/rest/posts"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "X-Restli-Protocol-Version": "2.0.0",
-        "LinkedIn-Version": "202605",
-        "Content-Type": "application/json"
-    }
+#     print("Publishing post...")
+#     post_url = "https://api.linkedin.com/rest/posts"
+#     headers = {
+#         "Authorization": f"Bearer {access_token}",
+#         "X-Restli-Protocol-Version": "2.0.0",
+#         "LinkedIn-Version": "202605",
+#         "Content-Type": "application/json"
+#     }
     
-    post_payload = {
-        "author": person_urn,
-        "commentary": text_content,
-        "visibility": "PUBLIC",
-        "distribution": {
-            "feedDistribution": "MAIN_FEED",
-            "targetEntities": [],
-            "thirdPartyDistributionChannels": []
-        },
-        "lifecycleState": "PUBLISHED",
-        "isReshareDisabledByAuthor": False
-    }
+#     post_payload = {
+#         "author": person_urn,
+#         "commentary": text_content,
+#         "visibility": "PUBLIC",
+#         "distribution": {
+#             "feedDistribution": "MAIN_FEED",
+#             "targetEntities": [],
+#             "thirdPartyDistributionChannels": []
+#         },
+#         "lifecycleState": "PUBLISHED",
+#         "isReshareDisabledByAuthor": False
+#     }
     
-    if image_urn:
-        post_payload["content"] = {
-            "media": {
-                "id": image_urn,
-                "altText": "Bug Bounty Tip generated by AI"
-            }
-        }
+#     if image_urn:
+#         post_payload["content"] = {
+#             "media": {
+#                 "id": image_urn,
+#                 "altText": "Bug Bounty Tip generated by AI"
+#             }
+#         }
         
-    response = requests.post(post_url, headers=headers, data=json.dumps(post_payload))
+#     response = requests.post(post_url, headers=headers, data=json.dumps(post_payload))
     
-    if response.status_code == 201:
-        post_id = response.headers.get("x-restli-id")
-        print(f"Success! LinkedIn post published with ID: {post_id}")
-        return True
-    else:
-        print(f"Failed to publish post. Status: {response.status_code}")
-        print(response.text)
-        raise ValueError(f"LinkedIn API Error: {response.text}")
+#     if response.status_code == 201:
+#         post_id = response.headers.get("x-restli-id")
+#         print(f"Success! LinkedIn post published with ID: {post_id}")
+#         return True
+#     else:
+#         print(f"Failed to publish post. Status: {response.status_code}")
+#         print(response.text)
+#         raise ValueError(f"LinkedIn API Error: {response.text}")
 
-if __name__ == "__main__":
-    # Small test sequence if run directly
-    try:
-        post_linkedin_via_api("Testing the new official LinkedIn API! #BugBounty")
-    except Exception as e:
-        print(f"Error: {e}")
+# if __name__ == "__main__":
+#     # Small test sequence if run directly
+#     try:
+#         post_linkedin_via_api("Testing the new official LinkedIn API! #BugBounty")
+#     except Exception as e:
+#         print(f"Error: {e}")
